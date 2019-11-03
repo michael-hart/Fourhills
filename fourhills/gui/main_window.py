@@ -1,14 +1,13 @@
 """Main window for Fourhills GUI"""
 
-import os
 from pathlib import Path
-
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
 from fourhills import Setting
 from fourhills.gui.entity_list_pane import EntityListPane
 from fourhills.gui.entity_pane import EntityPane
+from fourhills.gui.location_tree_pane import LocationTreePane
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -29,8 +28,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.root_layout.setObjectName("root_layout")
 
         # Populate with starting panes
+        self.location_pane = LocationTreePane("Locations", self)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.location_pane)
+        self.location_pane.widget().itemActivated.connect(self.on_location_activated)
+
         self.npc_pane = EntityListPane("NPCs", "NPC", self)
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.npc_pane)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.npc_pane)
         self.npc_pane.widget().itemActivated.connect(self.on_entity_activated)
 
         self.monsters_pane = EntityListPane("Monsters", "Monster", self)
@@ -48,6 +51,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Final window setup
         self.setCentralWidget(self.centralwidget)
         self.setWindowState(Qt.WindowMaximized)
+
+        # TODO remove - for development purposes only!
+        self.load("E:\\Git\\Fourhills\\ExampleWorld\\fh_setting.yaml")
 
     def create_actions(self):
         self.open_world_action = QtWidgets.QAction("&Open World", self)
@@ -75,6 +81,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
+
+    def on_location_activated(self, event):
+        # TODO open a new window for the location in question
+        pass
 
     def open_world(self, event):
         """User has requested opening a world, so find fh_setting.yaml"""
@@ -106,8 +116,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setting = setting
         self.world_dir = world_dir
         self.setWindowTitle(self.BASE_TITLE + f" ({path})")
-        self.npc_pane.load(self.world_dir / "npcs")
-        self.monsters_pane.load(self.world_dir / "monsters")
+        self.location_pane.load(self.setting.world_dir)
+        self.npc_pane.load(self.setting.npcs_dir)
+        self.monsters_pane.load(self.setting.monsters_dir)
         return True
 
 

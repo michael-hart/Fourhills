@@ -1,5 +1,3 @@
-import os
-import glob
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
@@ -16,15 +14,11 @@ class EntityListPane(QtWidgets.QDockWidget):
         """Search path for YAML files and load them as entities"""
         self.entity_list.clear()
 
-        if not os.path.isdir(str(path)):
+        if not path.is_dir():
             # Path does not exist, ignore
             return
 
-        for entity_file in glob.glob(str(path / "*.yaml"), recursive=True):
-            rel_path = os.path.relpath(entity_file, path)
-            rel_path.replace(os.path.sep, "/")
-
-            item = QtWidgets.QListWidgetItem(rel_path)
-            # item.setText(rel_path)
-            item.setData(Qt.UserRole, (self.entity_type, entity_file))
+        for entity_file in path.rglob("*.yaml"):
+            item = QtWidgets.QListWidgetItem(entity_file.stem)
+            item.setData(Qt.UserRole, (self.entity_type, str(entity_file)))
             self.entity_list.addItem(item)
