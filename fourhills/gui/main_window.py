@@ -1,14 +1,18 @@
 """Main window for Fourhills GUI"""
 
+import os
+from pathlib import Path
+
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtCore import Qt
 
-from fourhills.gui.content_pane import ContentPane
-from fourhills.gui.notes_pane import NotesPane
-from fourhills.gui.tab_result import TabResult
+from fourhills.gui.entity_list_pane import EntityListPane
+from fourhills.gui.entity_pane import EntityPane
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
+
+    BASE_TITLE = "FourHills GUI"
 
     def __init__(self):
         super().__init__()
@@ -16,94 +20,99 @@ class MainWindow(QMainWindow):
         # Basic window construction
         self.setObjectName("MainWindow")
         self.resize(800, 600)
-        self.centralwidget = QtWidgets.QWidget(self)
+        self.centralwidget = QtWidgets.QMdiArea(self)
         self.centralwidget.setObjectName("centralwidget")
 
         # Root layout creation
-        self.root_layout_widget = QtWidgets.QWidget(self.centralwidget)
-        self.root_layout_widget.setObjectName("root_layout_widget")
-        self.root_layout = QtWidgets.QVBoxLayout(self.root_layout_widget)
+        self.root_layout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.root_layout.setObjectName("root_layout")
 
-        # Content pane with stretch 2, so it is 2x height of notes pane
-        self.content_pane = ContentPane()
-        self.root_layout.addWidget(self.content_pane, 2)
+        # Populate with starting panes
+        self.npc_pane = EntityListPane("NPCs", "NPC", self)
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.npc_pane)
+        self.npc_pane.widget().itemActivated.connect(self.on_entity_activated)
 
-        # Notes pane
-        self.notes_pane = NotesPane(parent=self)
-        self.root_layout.addWidget(self.notes_pane, 1)
+        self.monsters_pane = EntityListPane("Monsters", "Monster", self)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.monsters_pane)
+        self.monsters_pane.widget().itemActivated.connect(self.on_entity_activated)
+
+        # Create actions, then menu bar using those actions
+        self.create_actions()
+        self.create_menu_bar()
+
+        # Create errors to live permanently, so user can hide them from
+        # appearing if desired
+        self.create_error_boxes()
 
         # Final window setup
         self.setCentralWidget(self.centralwidget)
-        self.centralwidget.setLayout(self.root_layout)
+        self.setWindowState(Qt.WindowMaximized)
 
-        # Set up keyboard shortcuts
-        self.open_shortcut = QtWidgets.QShortcut("Ctrl+O", self.centralwidget, self.handle_open)
-        self.save_shortcut = QtWidgets.QShortcut("Ctrl+S", self.centralwidget, self.handle_save)
-        self.monster_shortcut = QtWidgets.QShortcut(
-            "m",
-            self.centralwidget,
-            self.handle_monster_open
+    def create_actions(self):
+        self.open_world_action = QtWidgets.QAction("&Open World", self)
+        self.open_world_action.setStatusTip("Open an existing world (fh_setting.yaml)")
+        self.open_world_action.setShortcut("Ctrl+O")
+        self.open_world_action.triggered.connect(self.open_world)
+
+    def create_menu_bar(self):
+        self.file_menu = self.menuBar().addMenu("&File")
+        self.file_menu.addAction(self.open_world_action)
+
+    def create_error_boxes(self):
+        self.world_open_error = QtWidgets.QErrorMessage(self)
+
+    def on_entity_activated(self, event):
+        # Get entity information and construct widget
+        entity_type, entity_file = event.data(Qt.UserRole)
+        entity_widget = EntityPane(entity_type, entity_file, self)
+
+        # Create a new Mdi window with the entity information
+        sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
+        sub_window.setWidget(entity_widget)
+        sub_window.setAttribute(Qt.WA_DeleteOnClose)
+
+        self.centralwidget.addSubWindow(sub_window)
+        sub_window.show()
+
+    def open_world(self, event):
+        """User has requested opening a world, so find fh_setting.yaml"""
+        # Ignore filter used to select file
+        world_file, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Open World (fh_setting.yaml)",
+            ".",
+            "World Files (*.yaml)"
         )
-        self.npc_shortcut = QtWidgets.QShortcut(
-            "n",
-            self.centralwidget,
-            self.handle_npc_open
-        )
-        self.clear_shortcut = QtWidgets.QShortcut(
-            "c",
-            self.centralwidget,
-            self.handle_clear_panes
-        )
-        self.tab_shortcut = QtWidgets.QShortcut(
-            "Ctrl+Tab",
-            self.centralwidget,
-            self.handle_forward_tab
-        )
-        self.reverse_tab_shortcut = QtWidgets.QShortcut(
-            "Ctrl+Shift+Tab",
-            self.centralwidget,
-            self.handle_reverse_tab
-        )
+        if not world_file:
+            # User cancelled selection
+            return
 
-    def handle_open(self,):
-        self.notes_pane.load_notes()
+        # Check world file is a fh_setting.yaml file
+        base_name = os.path.basename(world_file)
+        if not base_name == "fh_setting.yaml":
+            # Give user an error dialog and return
+            self.world_open_error.showMessage(
+                f"The file selected was not a valid world file: {world_file}."
+                "Valid world files must be named \"fh_setting.yaml\" and contain a particular "
+                "directory structure."
+            )
+            return
 
-    def handle_save(self):
-        self.notes_pane.save_notes()
+        self.load(world_file)
 
-    def handle_monster_open(self):
-        self.content_pane.show_monster_pane()
-
-    def handle_npc_open(self):
-        self.content_pane.show_npc_pane()
-
-    def handle_clear_panes(self):
-        self.content_pane.clear_additional_panes()
-
-    def handle_tab(self, reverse=False):
-        panes = [self.content_pane, self.notes_pane, self.content_pane]
-        for idx, pane in enumerate(panes[:-1]):
-            if pane.has_focus():
-                result = pane.handle_tab(reverse)
-                if result == TabResult.TabRemaining:
-                    panes[idx + 1].handle_tab(reverse)
-                return
-        self.content_pane.handle_tab()
-
-    def handle_forward_tab(self):
-        self.handle_tab()
-
-    def handle_reverse_tab(self):
-        self.handle_tab(reverse=True)
+    def load(self, path):
+        self.setWindowTitle(self.BASE_TITLE + f" ({path})")
+        self.world_dir = Path(path).parents[0]
+        self.npc_pane.load(self.world_dir / "npcs")
+        self.monsters_pane.load(self.world_dir / "monsters")
 
 
 def main():
     import sys
-    app = QApplication([])
-    app.setApplicationName("FourHills GUI")
+    app = QtWidgets.QApplication([])
     window = MainWindow()
     window.show()
+    app.setApplicationName(MainWindow.BASE_TITLE)
     sys.exit(app.exec_())
 
 
