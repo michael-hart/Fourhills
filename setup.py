@@ -12,7 +12,7 @@ setuptools.setup(
         "click",
         "dataclasses",
         "pyyaml",
-        "pyside2",
+        "pyqt5",
     ],
     entry_points={
         'console_scripts': [

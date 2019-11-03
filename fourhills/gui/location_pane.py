@@ -1,7 +1,7 @@
 """Definition for location pane, listing selectable locations in a region"""
 
 import os
-from PySide2 import QtWidgets
+from PyQt5 import QtWidgets
 
 from fourhills.gui.tab_result import TabResult
 from fourhills.fourhills import SCENE_FILENAME

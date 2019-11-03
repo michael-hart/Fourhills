@@ -1,6 +1,6 @@
 """Define a Qt Widget for the Notes Pane"""
 
-from PySide2 import QtCore, QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 from fourhills.gui.tab_result import TabResult
 

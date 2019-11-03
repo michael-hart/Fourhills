@@ -1,7 +1,7 @@
 """Main window for Fourhills GUI"""
 
-from PySide2 import QtWidgets
-from PySide2.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 
 from fourhills.gui.content_pane import ContentPane
 from fourhills.gui.notes_pane import NotesPane

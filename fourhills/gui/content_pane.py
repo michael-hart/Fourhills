@@ -2,7 +2,7 @@
 
 import os
 
-from PySide2 import QtWidgets
+from PyQt5 import QtWidgets
 from fourhills.gui.centre_pane import CentrePane
 from fourhills.gui.location_pane import LocationPane
 from fourhills.gui.monster_pane import MonsterPane
