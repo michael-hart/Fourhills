@@ -1,18 +1,7 @@
-import enum
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFrame
 
-
-class MouseLocation(enum.Enum):
-    Centre = 0
-    TopBorder = 1
-    TopRightBorder = 2
-    RightBorder = 3
-    BottomRightBorder = 4
-    BottomBorder = 5
-    BottomLeftBorder = 6
-    LeftBorder = 7
-    TopLeftBorder = 8
+from mouse_location import MouseLocation
 
 
 class TileGridTile(QFrame):
@@ -27,6 +16,7 @@ class TileGridTile(QFrame):
         MouseLocation.BottomLeftBorder: QtCore.Qt.SizeBDiagCursor,
         MouseLocation.LeftBorder: QtCore.Qt.SizeHorCursor,
         MouseLocation.TopLeftBorder: QtCore.Qt.SizeFDiagCursor,
+        MouseLocation.Outside: QtCore.Qt.ArrowCursor,
     }
     CORNER_FRACTION = 0.05
 
@@ -56,8 +46,12 @@ class TileGridTile(QFrame):
                 self.setCursor(cursor)
 
     def get_mouse_location(self, pos):
+
         # Get rectangle defining area inside border
         r = self.frameRect()
+        if not r.contains(pos):
+            return MouseLocation.Outside
+
         w = self.frameWidth()
         r.setX(r.x() + w)
         r.setWidth(r.width() - w)  # Should be 2*w, I don't get why it's not
