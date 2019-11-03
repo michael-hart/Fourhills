@@ -3,7 +3,7 @@ import math
 import yaml
 from dataclasses import dataclass
 from typing import Optional, Dict, List
-from fourhills import Setting
+from fourhills.setting import Setting
 from fourhills.text_utils import format_indented_paragraph, format_list, centre_pad
 from fourhills.exceptions import (
     FourhillsFileLoadError, FourhillsSettingStructureError

@@ -6,6 +6,7 @@ from pathlib import Path
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
+from fourhills import Setting
 from fourhills.gui.entity_list_pane import EntityListPane
 from fourhills.gui.entity_pane import EntityPane
 
@@ -64,12 +65,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_entity_activated(self, event):
         # Get entity information and construct widget
         entity_type, entity_file = event.data(Qt.UserRole)
-        entity_widget = EntityPane(entity_type, entity_file, self)
+        entity_widget = EntityPane(entity_type, entity_file, self.setting, self)
 
         # Create a new Mdi window with the entity information
         sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
         sub_window.setWidget(entity_widget)
         sub_window.setAttribute(Qt.WA_DeleteOnClose)
+        sub_window.setWindowTitle(entity_widget.title)
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
@@ -88,23 +90,25 @@ class MainWindow(QtWidgets.QMainWindow):
             return
 
         # Check world file is a fh_setting.yaml file
-        base_name = os.path.basename(world_file)
-        if not base_name == "fh_setting.yaml":
+        if not self.load(world_file):
             # Give user an error dialog and return
             self.world_open_error.showMessage(
-                f"The file selected was not a valid world file: {world_file}."
+                f"The file selected was not a valid world file: {world_file}. "
                 "Valid world files must be named \"fh_setting.yaml\" and contain a particular "
                 "directory structure."
             )
-            return
 
-        self.load(world_file)
-
-    def load(self, path):
+    def load(self, path) -> bool:
+        world_dir = Path(path).parent
+        setting = Setting(base_path=world_dir)
+        if setting.root is None:
+            return False
+        self.setting = setting
+        self.world_dir = world_dir
         self.setWindowTitle(self.BASE_TITLE + f" ({path})")
-        self.world_dir = Path(path).parents[0]
         self.npc_pane.load(self.world_dir / "npcs")
         self.monsters_pane.load(self.world_dir / "monsters")
+        return True
 
 
 def main():

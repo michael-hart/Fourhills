@@ -9,14 +9,14 @@ class Setting:
     CONFIG_FILENAME = "fh_setting.yaml"
     DIRNAMES = {"world": "world", "monsters": "monsters", "npcs": "npcs"}
 
-    def __init__(self):
-        self.root = self.find_root()
+    def __init__(self, base_path=None):
+        self.root = self.find_root(base_path)
         self.pane_width = 56
         self.panes = 2
         self.column_width = 60
 
     @staticmethod
-    def find_root() -> Optional[Path]:
+    def find_root(base_path=None) -> Optional[Path]:
         """Find the root of the setting.
 
         Notes
@@ -28,8 +28,11 @@ class Setting:
         pathlib.Path or None
             The setting's root directory, or None if the file wasn't found
         """
-        # Get the current working directory and resolve any symlinks etc.
-        current_dir = Path.cwd().resolve()
+        if base_path is None:
+            # Get the current working directory and resolve any symlinks etc.
+            current_dir = Path.cwd().resolve()
+        else:
+            current_dir = Path(base_path)
         # While we can still ascend
         while current_dir != current_dir.parent:
             # See if the settings file exists

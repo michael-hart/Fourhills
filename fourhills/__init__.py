@@ -1,6 +1,6 @@
+from .npc import Npc
 from .setting import Setting
 from .stats import StatBlock
-from .npc import Npc
 
 name = "fourhills"
 

@@ -1,7 +1,8 @@
 import yaml
 from dataclasses import dataclass
 from typing import Optional, List, Dict
-from fourhills import Setting, StatBlock
+from fourhills.setting import Setting
+from fourhills.stats import StatBlock
 from fourhills.exceptions import (
     FourhillsFileLoadError, FourhillsSettingStructureError
 )
