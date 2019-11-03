@@ -1,17 +1,11 @@
 """Main window for Fourhills GUI"""
 
-from PySide2 import QtWidgets
-from PySide2.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
 
 from fourhills.gui.content_pane import ContentPane
 from fourhills.gui.notes_pane import NotesPane
 from fourhills.gui.tab_result import TabResult
-
-
-class TestWidget(QWidget):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.test_lbl = QtWidgets.QLabel("Hello from TestWidget!", parent=self)
 
 
 class MainWindow(QMainWindow):

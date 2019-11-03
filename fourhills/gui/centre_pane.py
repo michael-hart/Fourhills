@@ -3,7 +3,7 @@ Definition for centre pane, which shows various kinds of information such as sce
 battle information, and will be updated to contain other kinds.
 """
 
-from PySide2 import QtWidgets
+from PyQt5 import QtWidgets
 
 from fourhills.gui.tab_result import TabResult
 

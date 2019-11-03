@@ -7,12 +7,12 @@ setuptools.setup(
     author_email="55206+smuj@users.noreply.github.com",
     description="A package for managing D&D campaigns",
     license="GPL",
-    packages=["fourhills"],
+    packages=["fourhills", "fourhills.gui"],
     install_requires=[
         "click",
         "dataclasses",
         "pyyaml",
-        "pyside2",
+        "PyQt5",
     ],
     entry_points={
         'console_scripts': [

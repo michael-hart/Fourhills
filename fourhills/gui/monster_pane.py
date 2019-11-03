@@ -2,7 +2,7 @@
 
 import os
 import glob
-from PySide2 import QtWidgets
+from PyQt5 import QtWidgets
 
 from fourhills.gui.tab_result import TabResult
 
