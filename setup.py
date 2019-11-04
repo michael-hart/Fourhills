@@ -13,6 +13,7 @@ setuptools.setup(
         "dataclasses",
         "pyyaml",
         "PyQt5",
+        "jinja2",
     ],
     entry_points={
         'console_scripts': [
