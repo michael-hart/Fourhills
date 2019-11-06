@@ -1,0 +1,34 @@
+<html>
+{% if npc.deceased %}
+  <h2>{{npc.name}} (deceased)</h2> 
+{% else %}
+  <h2>{{npc.name}}</h2> 
+{% endif %}
+  <hr>
+  {{npc.stats.alignment.capitalize()}} {{npc.stats.name}} ({{npc.stats.size.capitalize()}} {{npc.stats.creature_type}})
+
+  <br>
+  
+  Appearance: {{npc.appearance}}
+  {% if npc.accent %}
+    Accent: {{npc.accent}}
+  {% endif %}
+
+  {% if npc.temperament %}
+  {{npc.temperament or ""}}
+  {% endif %}
+
+  {% if npc.background %}
+  {{npc.background or ""}}
+  {% endif %}
+
+{% if npc.phrases %}
+  <h2>Phrases</h2>
+  <ul>
+    {% for phrase in npc.phrases %}
+    <li>{{phrase}}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+</html>

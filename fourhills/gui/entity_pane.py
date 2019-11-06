@@ -1,4 +1,5 @@
 import os
+import jinja2
 from PyQt5 import QtWidgets
 
 from fourhills import Npc, StatBlock
@@ -12,6 +13,12 @@ class EntityPane(QtWidgets.QWidget):
         self.entity_type = entity_type
         self.entity_file = entity_file
         self.setting = setting
+
+        # Jinja template initialisation
+        jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('fourhills', package_path='gui/templates'))
+
+        self.battle_info_template = jinja_env.get_template("battle_info.j2")
+        self.character_info_template = jinja_env.get_template("character_info.j2")
 
         # Give self a VBoxLayout for components
         self.layout = QtWidgets.QVBoxLayout()
@@ -37,12 +44,12 @@ class EntityPane(QtWidgets.QWidget):
         summary = entity.summary_info()
         character = entity.character_info()
         info = summary + character
-        info_edit.setText("\n".join(info))
+        info_edit.setText(self.character_info_template.render(npc=entity))
         info_edit.setReadOnly(True)
         tab_widget.addTab(info_edit, "Info")
 
         stats_edit = QtWidgets.QTextEdit(tab_widget)
-        stats_edit.setText("\n".join(entity.battle_info()))
+        stats_edit.setText(self.battle_info_template.render(stats=entity.stats))
         stats_edit.setReadOnly(True)
         tab_widget.addTab(stats_edit, "Stats")
 
@@ -50,7 +57,7 @@ class EntityPane(QtWidgets.QWidget):
 
     def create_monster_widget(self, entity, parent=None):
         stats_edit = QtWidgets.QTextEdit(parent)
-        stats_edit.setText("\n".join(entity.battle_info()))
+        stats_edit.setText(self.battle_info_template.render(stats=entity))
         stats_edit.setReadOnly(True)
         return stats_edit
 
