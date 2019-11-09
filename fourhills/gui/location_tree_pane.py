@@ -6,7 +6,6 @@ class LocationTreePane(QtWidgets.QDockWidget):
     def __init__(self, title, parent=None):
         super().__init__(title, parent)
         self.location_tree = QtWidgets.QTreeWidget(self)
-        # self.location_tree.setColumnCount(1)
         self.setWidget(self.location_tree)
 
     def load(self, path):

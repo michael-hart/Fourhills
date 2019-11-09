@@ -42,17 +42,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.root_layout.setObjectName("root_layout")
 
         # Populate with starting panes
-        self.location_pane = LocationTreePane("Locations", self)
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.location_pane)
-        self.location_pane.widget().itemActivated.connect(self.on_location_activated)
-
-        self.npc_pane = EntityListPane("NPCs", "NPC", self)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.npc_pane)
-        self.npc_pane.widget().itemActivated.connect(self.on_entity_activated)
-
-        self.monsters_pane = EntityListPane("Monsters", "Monster", self)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.monsters_pane)
-        self.monsters_pane.widget().itemActivated.connect(self.on_entity_activated)
+        self.create_location_pane(area=Qt.LeftDockWidgetArea)
+        self.create_npc_pane(area=Qt.RightDockWidgetArea)
+        self.create_monster_pane(area=Qt.RightDockWidgetArea)
 
         # Create actions, then menu bar using those actions
         self.create_actions()
@@ -69,15 +61,70 @@ class MainWindow(QtWidgets.QMainWindow):
         # TODO remove - for development purposes only!
         self.load("E:\\Git\\Fourhills\\ExampleWorld\\fh_setting.yaml")
 
+    def create_location_pane(self, checked=False, area=None):
+        if not hasattr(self, "location_pane") or not self.location_pane.isVisible():
+            self.location_pane = LocationTreePane("Locations", self)
+            if area is None:
+                self.addDockWidget(Qt.RightDockWidgetArea, self.location_pane)
+                self.location_pane.setFloating(True)
+            else:
+                self.addDockWidget(area, self.location_pane)
+            if hasattr(self, "setting") and self.setting is not None:
+                self.location_pane.load(self.setting.world_dir)
+            self.location_pane.widget().itemActivated.connect(self.on_location_activated)
+
+    def create_npc_pane(self, checked=False, area=None):
+        if not hasattr(self, "npc_pane") or not self.npc_pane.isVisible():
+            self.npc_pane = EntityListPane("NPCs", "NPC", self)
+            if area is None:
+                self.addDockWidget(Qt.RightDockWidgetArea, self.npc_pane)
+                self.npc_pane.setFloating(True)
+            else:
+                self.addDockWidget(area, self.npc_pane)
+            if hasattr(self, "setting") and self.setting is not None:
+                self.npc_pane.load(self.setting.npcs_dir)
+            self.npc_pane.widget().itemActivated.connect(self.on_entity_activated)
+
+    def create_monster_pane(self, checked=False, area=None):
+        if not hasattr(self, "monsters_pane") or not self.monsters_pane.isVisible():
+            self.monsters_pane = EntityListPane("Monsters", "Monster", self)
+            if area is None:
+                self.addDockWidget(Qt.RightDockWidgetArea, self.monsters_pane)
+                self.monsters_pane.setFloating(True)
+            else:
+                self.addDockWidget(area, self.monsters_pane)
+            if hasattr(self, "setting") and self.setting is not None:
+                self.monsters_pane.load(self.setting.monsters_dir)
+            self.monsters_pane.widget().itemActivated.connect(self.on_entity_activated)
+
     def create_actions(self):
+        # File menu actions
         self.open_world_action = QtWidgets.QAction("&Open World", self)
         self.open_world_action.setStatusTip("Open an existing world (fh_setting.yaml)")
         self.open_world_action.setShortcut("Ctrl+O")
         self.open_world_action.triggered.connect(self.open_world)
 
+        # View menu actions
+        self.view_location_action = QtWidgets.QAction("&Locations", self)
+        self.view_location_action.setStatusTip("View tree of locations within the world")
+        self.view_location_action.triggered.connect(self.create_location_pane)
+
+        self.view_npc_action = QtWidgets.QAction("&NPCs", self)
+        self.view_npc_action.setStatusTip("View list of npcs within the world")
+        self.view_npc_action.triggered.connect(self.create_npc_pane)
+
+        self.view_monster_action = QtWidgets.QAction("&Monsters", self)
+        self.view_monster_action.setStatusTip("View list of monsters within the world")
+        self.view_monster_action.triggered.connect(self.create_monster_pane)
+
     def create_menu_bar(self):
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.addAction(self.open_world_action)
+
+        self.view_menu = self.menuBar().addMenu("&View")
+        self.view_menu.addAction(self.view_location_action)
+        self.view_menu.addAction(self.view_npc_action)
+        self.view_menu.addAction(self.view_monster_action)
 
     def create_error_boxes(self):
         self.world_open_error = QtWidgets.QErrorMessage(self)
