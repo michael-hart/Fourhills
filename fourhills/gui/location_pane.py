@@ -3,10 +3,10 @@
 import jinja2
 import markdown
 from pathlib import Path
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 from fourhills import Location, Setting
-# from fourhills.gui.markdown_viewer import MarkdownViewer
+from fourhills.gui.anchor_clicked_event import AnchorClickedEvent
 
 
 class LocationPane(QtWidgets.QWidget):
@@ -39,9 +39,12 @@ class LocationPane(QtWidgets.QWidget):
         self.layout.addWidget(tab_widget)
 
     def create_loc_widget(self, location, parent=None):
-        loc_edit = QtWidgets.QTextEdit(parent)
-        loc_edit.setText(self.location_template.render(location=location))
+        loc_edit = QtWidgets.QTextBrowser(parent)
+        loc_edit.setHtml(self.location_template.render(location=location))
+        loc_edit.setOpenLinks(False)
+        loc_edit.setOpenExternalLinks(False)
         loc_edit.setReadOnly(True)
+        loc_edit.anchorClicked.connect(self.post_anchor_clicked)
         return loc_edit
 
     def create_scene_widget(self, location, parent=None):
@@ -54,3 +57,9 @@ class LocationPane(QtWidgets.QWidget):
         scene_edit = QtWidgets.QTextEdit(parent)
         scene_edit.setText(md)
         return scene_edit
+
+    def post_anchor_clicked(self, event):
+        QtCore.QCoreApplication.postEvent(
+            QtCore.QCoreApplication.instance(),
+            AnchorClickedEvent(event)
+        )

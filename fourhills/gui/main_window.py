@@ -1,14 +1,27 @@
 """Main window for Fourhills GUI"""
 
 from pathlib import Path
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 
 from fourhills import Setting
+from fourhills.exceptions import FourhillsSettingStructureError
+from fourhills.gui.anchor_clicked_event import AnchorClickedEvent
 from fourhills.gui.entity_list_pane import EntityListPane
 from fourhills.gui.entity_pane import EntityPane
 from fourhills.gui.location_pane import LocationPane
 from fourhills.gui.location_tree_pane import LocationTreePane
+
+
+class AnchorClickedEventFilter(QtCore.QObject):
+
+    anchorClicked = QtCore.pyqtSignal(AnchorClickedEvent)
+
+    def eventFilter(self, obj, event):
+        if event and type(event) is AnchorClickedEvent:
+            self.anchorClicked.emit(event)
+            return True
+        return QtCore.QObject.eventFilter(self, obj, event)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -68,11 +81,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def create_error_boxes(self):
         self.world_open_error = QtWidgets.QErrorMessage(self)
+        self.anchor_click_error = QtWidgets.QErrorMessage(self)
 
     def on_entity_activated(self, event):
         # Get entity information and construct widget
         entity_type, entity_file = event.data(Qt.UserRole)
-        entity_widget = EntityPane(entity_type, entity_file, self.setting, self)
+        self.open_entity(entity_type, entity_file)
+
+    def open_entity(self, entity_type, entity_file):
+        # Present error message if entity is not real
+        try:
+            entity_widget = EntityPane(entity_type, entity_file, self.setting, self)
+        except FourhillsSettingStructureError as fsse:
+            QtWidgets.QErrorMessage(self).showMessage("\n".join(fsse.args))
+            return
 
         # Create a new Mdi window with the entity information
         sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
@@ -94,7 +116,15 @@ class MainWindow(QtWidgets.QMainWindow):
         directories.reverse()
         for directory in directories:
             path = path / directory
-        location_widget = LocationPane(path, self.setting, self)
+        self.open_location(path)
+
+    def open_location(self, path):
+        # Present error message if location is not real
+        try:
+            location_widget = LocationPane(path, self.setting, self)
+        except FourhillsSettingStructureError as fsse:
+            QtWidgets.QErrorMessage(self).showMessage("\n".join(fsse.args))
+            return
 
         # Create a new Mdi window with the location information
         sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
@@ -104,6 +134,20 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
+
+    def on_anchor_clicked(self, event):
+        # Work out the type of link clicked
+        parts = event.url.url().split("://")
+        event_type = parts[0]
+        if event_type == "npc":
+            self.open_entity("NPC", parts[1])
+        elif event_type == "monster":
+            self.open_entity("Monster", parts[1])
+        elif event_type == "location":
+            Path(parts[1:])
+        else:
+            # TODO present error message
+            pass
 
     def open_world(self, event):
         """User has requested opening a world, so find fh_setting.yaml"""
@@ -145,6 +189,13 @@ def main():
     import sys
     app = QtWidgets.QApplication([])
     window = MainWindow()
+
+    # Connect all anchor clicked signals to main window
+    core_app = QtCore.QCoreApplication.instance()
+    anchorFilter = AnchorClickedEventFilter(core_app)
+    core_app.installEventFilter(anchorFilter)
+    anchorFilter.anchorClicked.connect(window.on_anchor_clicked)
+    # window.connect(anchorFilter, anchorFilter.anchorClicked, window.on_anchor_clicked)
     window.show()
     app.setApplicationName(MainWindow.BASE_TITLE)
     sys.exit(app.exec_())

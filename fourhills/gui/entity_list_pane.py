@@ -20,5 +20,5 @@ class EntityListPane(QtWidgets.QDockWidget):
 
         for entity_file in path.rglob("*.yaml"):
             item = QtWidgets.QListWidgetItem(entity_file.stem)
-            item.setData(Qt.UserRole, (self.entity_type, str(entity_file)))
+            item.setData(Qt.UserRole, (self.entity_type, entity_file.stem))
             self.entity_list.addItem(item)

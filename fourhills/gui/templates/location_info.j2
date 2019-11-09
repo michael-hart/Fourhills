@@ -14,7 +14,7 @@
   <h3>NPCs</h3>
   <ul>
     {% for npc in location.npcs %}
-    <li>{{npc}}</li>
+    <li><a href="npc://{{npc}}">{{npc}}</a></li>
     {% endfor %}
   </ul>
 {% endif %}
@@ -23,7 +23,7 @@
   <h3>Monsters</h3>
   <ul>
     {% for monster in location.monsters %}
-    <li>{{monster.name}} x{{monster.quantity}}</li>
+    <li><a href="monster://{{monster.name}}">{{monster.name}}</a> x{{monster.quantity}}</li>
     {% endfor %}
   </ul>
 {% endif %}
