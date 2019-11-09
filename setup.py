@@ -11,6 +11,7 @@ setuptools.setup(
     install_requires=[
         "click",
         "dataclasses",
+        "markdown",
         "pyyaml",
         "PyQt5",
         "jinja2",

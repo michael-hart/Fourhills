@@ -1,0 +1,4 @@
+name: Walton
+monsters:
+  - name: walton_thug
+    quantity: 6

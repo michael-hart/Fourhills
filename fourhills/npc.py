@@ -15,6 +15,7 @@ class Npc:
 
     name: str
     appearance: str
+    description: Optional[str] = None
     temperament: Optional[str] = None
     accent: Optional[str] = None
     phrases: Optional[List[str]] = None
@@ -87,6 +88,8 @@ class Npc:
         """
         lines = []
         lines.append(f"Appearance: {self.appearance}")
+        if self.description:
+            lines.append(f"Description: {self.description}")
         if self.accent:
             lines.append(f"Accent: {self.accent}")
         lines.append((self.temperament or "") + (" " + self.background or ""))

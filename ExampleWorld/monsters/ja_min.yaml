@@ -1,0 +1,29 @@
+name: Ja-min
+size: medium
+creature_type: human
+alignment: unaligned
+ac: "10"
+hp: 4 (1d8)
+speed: 30 ft.
+
+ability:
+  STR: 10
+  DEX: 10
+  CON: 10
+  INT: 10
+  WIS: 10
+  CHA: 10
+
+passive_perception: 10
+
+languages:
+  - common
+
+challenge: 0
+
+melee_attacks:
+  club:
+    hit: "+2"
+    reach: 5 ft.
+    targets: one target
+    damage: 2 bludgeoning damage

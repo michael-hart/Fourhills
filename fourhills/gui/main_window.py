@@ -7,6 +7,7 @@ from PyQt5.QtCore import Qt
 from fourhills import Setting
 from fourhills.gui.entity_list_pane import EntityListPane
 from fourhills.gui.entity_pane import EntityPane
+from fourhills.gui.location_pane import LocationPane
 from fourhills.gui.location_tree_pane import LocationTreePane
 
 
@@ -82,9 +83,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
 
-    def on_location_activated(self, event):
-        # TODO open a new window for the location in question
-        pass
+    def on_location_activated(self, event, column):
+        # Figure out relative path to the opened location
+        path = Path(".")
+        item = event
+        directories = [item.text(0)]
+        while item.parent() is not None:
+            directories += [item.parent().text(0)]
+            item = item.parent()
+        directories.reverse()
+        for directory in directories:
+            path = path / directory
+        location_widget = LocationPane(path, self.setting, self)
+
+        # Create a new Mdi window with the location information
+        sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
+        sub_window.setWidget(location_widget)
+        sub_window.setAttribute(Qt.WA_DeleteOnClose)
+        sub_window.setWindowTitle(str(location_widget.location))
+
+        self.centralwidget.addSubWindow(sub_window)
+        sub_window.show()
 
     def open_world(self, event):
         """User has requested opening a world, so find fh_setting.yaml"""

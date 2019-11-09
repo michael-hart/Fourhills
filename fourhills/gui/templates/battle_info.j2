@@ -1,5 +1,10 @@
 <html>
 
+{% if stats.description %}
+<h3>Description</h3>
+{{stats.description}}
+{% endif %}
+
 <hr>         
     <table align=center width=95%>
         <thead>
@@ -19,6 +24,43 @@
     </table>
 <hr>
 
+<h3>Actions</h3>
+<br>
+{% if stats.melee_attacks %}
+    {% for name, details in stats.melee_attacks.items(): %}
+        <strong>{{name.capitalize()}}:</strong> melee weapon attack, {{details["hit"]}} to hit, reach {{details["reach"]}}, {{details["targets"]}}. Hit damage: {{details["damage"]}}.
+        {% if "info" in details %}
+            {{details["info"]}}
+        {% endif %}
+        <br>
+        <br>
+    {% endfor %}
+{% endif %}
+
+{% if stats.ranged_attacks %}
+    {% for name, details in stats.ranged_attacks.items(): %}
+        <strong>{{name.capitalize()}}:</strong> ranged weapon attack, {{details["hit"]}} to hit, range {{details["range"]}}, {{details["targets"]}}. Hit damage: {{details["damage"]}}.
+        {% if "info" in details %}
+            {{details["info"]}}
+        {% endif %}
+        <br>
+        <br>
+    {% endfor %}
+{% endif %}
+
+{% if stats.multiattack %}
+    <strong>Multiattack:</strong> {{stats.multiattack}}
+    <br>
+    <br>
+{% endif %}
+
+{% if stats.other_actions %}
+    {% for name, text in stats.other_actions.items() %}
+        <strong>{{name.capitalize()}}:</strong> {{text}}
+        <br>
+        <br>
+    {% endfor %}
+{% endif %}
 
 {% if stats.ability %}
 <h3>Abilities</h3>
@@ -132,50 +174,6 @@ Challenge: {{stats.challenge}}
 {% for name, description in stats.special_traits.items(): %}
 {{name.capitalize()}}: {{description}} <br>
 {% endfor %}
-{% endif %}
-
-
-<h3>Actions</h3>
-<br>
-{% if stats.melee_attacks %}
-    {% for name, details in stats.melee_attacks.items(): %}
-        <strong>{{name.capitalize()}}:</strong> melee weapon attack, {{details["hit"]}} to hit, reach {{details["reach"]}}, {{details["targets"]}}. Hit damage: {{details["damage"]}}.
-        {% if "info" in details %}
-            {{details["info"]}}
-        {% endif %}
-        <br>
-        <br>
-    {% endfor %}
-{% endif %}
-
-{% if stats.ranged_attacks %}
-    {% for name, details in stats.ranged_attacks.items(): %}
-        <strong>{{name.capitalize()}}:</strong> ranged weapon attack, {{details["hit"]}} to hit, range {{details["range"]}}, {{details["targets"]}}. Hit damage: {{details["damage"]}}.
-        {% if "info" in details %}
-            {{details["info"]}}
-        {% endif %}
-        <br>
-        <br>
-    {% endfor %}
-{% endif %}
-
-{% if stats.multiattack %}
-    <strong>Multiattack:</strong> {{stats.multiattack}}
-    <br>
-    <br>
-{% endif %}
-
-{% if stats.other_actions %}
-    {% for name, text in stats.other_actions.items() %}
-        <strong>{{name.capitalize()}}:</strong> {{text}}
-        <br>
-        <br>
-    {% endfor %}
-{% endif %}
-
-{% if stats.description %}
-<h3>Description</h3>
-{{stats.description}}
 {% endif %}
 
 </html>

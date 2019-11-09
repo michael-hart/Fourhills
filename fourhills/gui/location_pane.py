@@ -1,45 +1,56 @@
-"""Definition for location pane, listing selectable locations in a region"""
+"""Definition for location pane, giving details about the selected location"""
 
-import os
+import jinja2
+import markdown
+from pathlib import Path
 from PyQt5 import QtWidgets
 
-from fourhills.gui.tab_result import TabResult
-from fourhills.fourhills import SCENE_FILENAME
+from fourhills import Location, Setting
+# from fourhills.gui.markdown_viewer import MarkdownViewer
 
 
 class LocationPane(QtWidgets.QWidget):
 
-    def __init__(self, setting, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, rel_path: Path, setting: Setting, parent=None):
+        super().__init__(parent)
+
+        self.rel_path = rel_path
+        self.setting = setting
+
+        # Jinja template initialiation
+        jinja_env = jinja2.Environment(
+            loader=jinja2.PackageLoader('fourhills', package_path='gui/templates')
+        )
+
+        self.location_template = jinja_env.get_template("location_info.j2")
+
+        # Give self a VBoxLayout for components
         self.layout = QtWidgets.QVBoxLayout()
-
-        self.layout.addWidget(QtWidgets.QLabel("Location(s):"))
-        self.location_list = QtWidgets.QListWidget()
-        self.layout.addWidget(self.location_list)
-
         self.setLayout(self.layout)
 
-        self.setting = setting
-        self.populate_locations()
+        self.location = Location.from_name(rel_path, setting)
 
-    def populate_locations(self):
-        """Search for folders with scene file and make them available as locations"""
-        self.location_list.clear()
-        world_dir = self.setting.world_dir
-        for root, dirs, files in os.walk(world_dir):
-            if SCENE_FILENAME in files:
-                rel_path = os.path.relpath(root, world_dir)
-                rel_path.replace(os.path.sep, "/")
-                self.location_list.addItem(rel_path)
-        if self.location_list.count():
-            self.location_list.setCurrentRow(0)
+        tab_widget = QtWidgets.QTabWidget(parent)
+        loc_widget = self.create_loc_widget(self.location, tab_widget)
+        scene_widget = self.create_scene_widget(self.location, tab_widget)
+        tab_widget.addTab(loc_widget, "Location")
+        if scene_widget:
+            tab_widget.addTab(scene_widget, "Description")
+        self.layout.addWidget(tab_widget)
 
-    def has_focus(self):
-        """Alternative to hasFocus which checks widget children for focus"""
-        return self.location_list.hasFocus()
+    def create_loc_widget(self, location, parent=None):
+        loc_edit = QtWidgets.QTextEdit(parent)
+        loc_edit.setText(self.location_template.render(location=location))
+        loc_edit.setReadOnly(True)
+        return loc_edit
 
-    def handle_tab(self, reverse=False):
-        if self.location_list.hasFocus():
-            return TabResult.TabRemaining
-        self.location_list.setFocus()
-        return TabResult.TabConsumed
+    def create_scene_widget(self, location, parent=None):
+        scene_path = self.setting.world_dir / location.path / "scene.md"
+        if not scene_path.is_file():
+            return None
+        with open(scene_path) as f:
+            md_contents = f.read()
+        md = markdown.markdown(md_contents)
+        scene_edit = QtWidgets.QTextEdit(parent)
+        scene_edit.setText(md)
+        return scene_edit

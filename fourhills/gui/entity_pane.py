@@ -41,9 +41,6 @@ class EntityPane(QtWidgets.QWidget):
         tab_widget = QtWidgets.QTabWidget(parent)
 
         info_edit = QtWidgets.QTextEdit(tab_widget)
-        summary = entity.summary_info()
-        character = entity.character_info()
-        info = summary + character
         info_edit.setText(self.character_info_template.render(npc=entity))
         info_edit.setReadOnly(True)
         tab_widget.addTab(info_edit, "Info")

@@ -1,0 +1,10 @@
+name: The Kobold's Lantern
+npcs:
+  - kobold_halflings
+  - igthin
+  - tarron
+description: >-
+  A lowlife's tavern.
+  Shabby entrance.
+  Inside, it's dim, lit by a scattering of oil lamps.
+  There are some wooden tables and a bar.

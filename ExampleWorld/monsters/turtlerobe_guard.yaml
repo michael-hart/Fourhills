@@ -1,0 +1,38 @@
+name: Turtlerobe Guard
+size: medium
+creature_type: human
+alignment: unaligned
+ac: "16"
+hp: 11(2d8 + 2)
+speed: 30 ft.
+
+ability:
+  STR: 13
+  DEX: 12
+  CON: 12
+  INT: 10
+  WIS: 11
+  CHA: 10
+
+skills:
+  perception: "+2"
+
+challenge: 0.125
+passive_perception: 10
+
+languages:
+  - common
+
+melee_attacks:
+  spear:
+    hit: "+3"
+    reach: 5 ft.
+    targets: one target
+    damage: 4 (1d6+1) piercing damage
+
+ranged_attacks:
+  spear:
+    hit: "+3"
+    range: 20/60 ft.
+    targets: one target
+    damage: 4 (1d6+1) piercing damage

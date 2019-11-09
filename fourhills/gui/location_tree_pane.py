@@ -29,7 +29,7 @@ class LocationTreePane(QtWidgets.QDockWidget):
                     current_dict[part] = {}
                 current_dict = current_dict[part]
 
-        # Somehow add all of these to the tree
+        # Recursively create sub levels of tree and add to tree control
         top_level = self.create_tree_widget_items(items)
         self.location_tree.addTopLevelItems(top_level)
 
