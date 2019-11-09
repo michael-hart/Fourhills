@@ -1,6 +1,7 @@
 import os
 import jinja2
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 
 from fourhills import Npc, StatBlock
 
@@ -15,7 +16,9 @@ class EntityPane(QtWidgets.QWidget):
         self.setting = setting
 
         # Jinja template initialisation
-        jinja_env = jinja2.Environment(loader=jinja2.PackageLoader('fourhills', package_path='gui/templates'))
+        jinja_env = jinja2.Environment(
+            loader=jinja2.PackageLoader('fourhills', package_path='gui/templates')
+        )
 
         self.battle_info_template = jinja_env.get_template("battle_info.j2")
         self.character_info_template = jinja_env.get_template("character_info.j2")
