@@ -180,7 +180,7 @@ class MainWindow(QtWidgets.QMainWindow):
         elif event_type == "monster":
             self.open_entity("Monster", parts[1])
         elif event_type == "location":
-            Path(parts[1:])
+            self.open_location(Path(*parts[1:]))
         else:
             self.anchor_click_error.showMessage(
                 f"Unknown window type requested: {event_type}"

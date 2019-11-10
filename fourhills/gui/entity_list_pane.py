@@ -17,7 +17,7 @@ class EntityListPane(QtWidgets.QDockWidget):
         self.entity_list.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.setWidget(self.entity_list)
 
-        # Allow user options for adding/deleting entities
+        # Allow user options for adding/renaming/deleting entities
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
 

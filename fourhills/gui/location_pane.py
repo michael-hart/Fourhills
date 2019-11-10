@@ -6,7 +6,9 @@ from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
 
 from fourhills import Location, Setting
-from fourhills.gui.events import AnchorClickedEvent
+from fourhills.gui.events import (
+    AnchorClickedEvent, LocationRenamedEventFilter, LocationDeletedEventFilter
+)
 
 
 class LocationPane(QtWidgets.QWidget):
@@ -23,6 +25,12 @@ class LocationPane(QtWidgets.QWidget):
         )
 
         self.location_template = jinja_env.get_template("location_info.j2")
+
+        # Create events for location renaming and deleting
+        renameFilter = LocationRenamedEventFilter.get_filter()
+        renameFilter.locationRenamed.connect(self.on_location_renamed)
+        deleteFilter = LocationDeletedEventFilter.get_filter()
+        deleteFilter.locationDeleted.connect(self.on_location_deleted)
 
         # Give self a VBoxLayout for components
         self.layout = QtWidgets.QVBoxLayout()
@@ -63,3 +71,11 @@ class LocationPane(QtWidgets.QWidget):
             QtCore.QCoreApplication.instance(),
             AnchorClickedEvent(event)
         )
+
+    def on_location_renamed(self, event):
+        if self.rel_path == event.old_location_path:
+            self.rel_path = event.new_location_path
+
+    def on_location_deleted(self, event):
+        if self.rel_path == event.location_path:
+            self.parent().close()
