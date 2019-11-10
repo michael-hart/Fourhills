@@ -166,7 +166,7 @@ class MainWindow(QtWidgets.QMainWindow):
         sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
         sub_window.setWidget(location_widget)
         sub_window.setAttribute(Qt.WA_DeleteOnClose)
-        sub_window.setWindowTitle(str(location_widget.location))
+        sub_window.setWindowTitle(location_widget.title)
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()

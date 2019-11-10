@@ -287,12 +287,16 @@ class StatBlock:
             subdirectories.
         """
         # Suspected path of the stat config file
-        stat_file = setting.monsters_dir / (name + ".yaml")
+        stat_file = StatBlock.absolute_path(name, setting)
         if not stat_file.is_file():
             raise FourhillsSettingStructureError(
                 f"Stat file {stat_file} does not exist."
             )
         return cls.from_file(str(stat_file))
+
+    @staticmethod
+    def absolute_path(name: str, setting: Setting):
+        return setting.monsters_dir / (name + ".yaml")
 
 
 def example():

@@ -22,6 +22,7 @@ class Npc:
     background: Optional[str] = None
     deceased: Optional[bool] = False
     stats: Optional[Dict] = None
+    stats_base: Optional[str] = None
 
     def __str__(self):
         return self.summary_info(line_width=80)
@@ -116,7 +117,7 @@ class Npc:
             subdirectories.
         """
         # Suspected path of the NPC file
-        npc_file = setting.npcs_dir / (name + ".yaml")
+        npc_file = Npc.absolute_path(name, setting)
         if not npc_file.is_file():
             raise FourhillsSettingStructureError(f"NPC file {npc_file} does not exist.")
         with open(npc_file) as f:
@@ -133,13 +134,20 @@ class Npc:
             if "stats" in npc_dict:
                 raise NotImplementedError
 
-            npc = cls(
-                **{
-                    key: value
-                    for key, value in npc_dict.items()
-                    if key not in ["stats_base", "stats"]
-                }
-            )
-            npc.stats = stats
+            try:
+                npc = cls(
+                    **{
+                        key: value
+                        for key, value in npc_dict.items()
+                        if key not in ["stats"]
+                    }
+                )
+                npc.stats = stats
+            except TypeError as te:
+                raise FourhillsFileLoadError from te
 
             return npc
+
+    @staticmethod
+    def absolute_path(name: str, setting: Setting):
+        return setting.npcs_dir / (name + ".yaml")

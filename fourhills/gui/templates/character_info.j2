@@ -7,7 +7,7 @@
   <hr>
 
   {% if npc.stats %}
-  {{npc.stats.alignment.capitalize()}} {{npc.stats.name}} ({{npc.stats.size.capitalize()}} {{npc.stats.creature_type}})
+  Stats: <a href="monster://{{npc.stats_base}}">{{npc.stats.alignment.capitalize()}} {{npc.stats.name}} ({{npc.stats.size.capitalize()}} {{npc.stats.creature_type}})</a>
   <br>
   {% endif %}
   

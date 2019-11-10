@@ -1,18 +1,30 @@
 import jinja2
+from pathlib import Path
 from PyQt5 import QtWidgets
 
 from fourhills import Npc, StatBlock
+from fourhills.gui.linking_browser import LinkingBrowser
 from fourhills.gui.events import EntityRenamedEventFilter, EntityDeletedEventFilter
 
 
 class EntityPane(QtWidgets.QWidget):
 
-    def __init__(self, entity_type, entity_file, setting, parent=None):
+    def __init__(self, entity_type, entity_name, setting, parent=None):
         super().__init__(parent)
 
         self.entity_type = entity_type
-        self.entity_file = entity_file
+        self.entity_name = entity_name
         self.setting = setting
+
+        # Check that entity_type is valid and refuse it if not
+        if entity_type not in ["Monster", "NPC"]:
+            QtWidgets.QErrorMessage(self).showMessage(
+                "Cannot create entity pane from unknown entity type {}".format(
+                    entity_type
+                )
+            )
+            self.parent().close()
+            return
 
         # Jinja template initialisation
         jinja_env = jinja2.Environment(
@@ -32,74 +44,79 @@ class EntityPane(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
-        self.set_entity(entity_type, entity_file)
-        self.create_entity_widget(entity_type, self.entity)
+        self.create_entity_widget(entity_type, self.entity_name, self.setting)
 
-    def create_entity_widget(self, entity_type, entity):
+    def create_entity_widget(self, entity_type, entity_name, setting):
         if entity_type == "NPC":
-            self.layout.addWidget(self.create_npc_widget(entity))
+            entity_path = Npc.absolute_path(entity_name, setting)
+            self.layout.addWidget(self.create_npc_widget(entity_path))
         elif entity_type == "Monster":
-            self.layout.addWidget(self.create_monster_widget(entity))
-        else:
-            self.layout.addWidget(self.create_unknown_entity_widget(entity))
+            entity_path = StatBlock.absolute_path(entity_name, setting)
+            self.layout.addWidget(self.create_monster_widget(entity_path))
 
-    def set_entity(self, entity_type, entity_file):
-        if entity_type == "NPC":
-            self.entity = Npc.from_name(entity_file, self.setting)
-        elif entity_type == "Monster":
-            # Statblock contains all monster attributes, so use directly
-            self.entity = StatBlock.from_name(entity_file, self.setting)
-        else:
-            self.entity = entity_file
+    def create_npc_widget(self, entity_path, parent=None):
 
-    def create_npc_widget(self, entity, parent=None):
+        self.tab_widget = QtWidgets.QTabWidget(parent)
 
-        tab_widget = QtWidgets.QTabWidget(parent)
+        self.info_edit = LinkingBrowser(entity_path, self.render_npc)
+        self.stat_edit = LinkingBrowser(entity_path, self.render_npc_stat, editable=False)
 
-        info_edit = QtWidgets.QTextEdit(tab_widget)
-        info_edit.setText(self.character_info_template.render(npc=entity))
-        info_edit.setReadOnly(True)
-        tab_widget.addTab(info_edit, "Info")
+        self.info_tab = self.tab_widget.addTab(self.info_edit, "Info")
+        self.stat_tab = self.tab_widget.addTab(self.stat_edit, "Stats")
 
-        stats_edit = QtWidgets.QTextEdit(tab_widget)
-        stats_edit.setText(self.battle_info_template.render(stats=entity.stats))
-        stats_edit.setReadOnly(True)
-        tab_widget.addTab(stats_edit, "Stats")
+        self.info_edit.fileIsSame.connect(
+            lambda: self.tab_widget.setTabText(self.info_tab, "Info")
+        )
+        self.info_edit.fileIsDifferent.connect(
+            lambda: self.tab_widget.setTabText(self.info_tab, "Info*")
+        )
 
-        return tab_widget
+        return self.tab_widget
 
-    def create_monster_widget(self, entity, parent=None):
-        stats_edit = QtWidgets.QTextEdit(parent)
-        stats_edit.setText(self.battle_info_template.render(stats=entity))
-        stats_edit.setReadOnly(True)
-        return stats_edit
-
-    def create_unknown_entity_widget(self, entity_file, parent=None):
-        # Component will be a QTextEdit containing raw YAML
-        text_edit = QtWidgets.QTextEdit(parent)
-
-        with open(self.entity_file, 'r') as entity:
-            entity_text = entity.read()
-        text_edit.setText(entity_text)
-        return text_edit
+    def create_monster_widget(self, entity_path, parent=None):
+        self.stat_edit = LinkingBrowser(entity_path, self.render_monster_stat)
+        self.stat_edit.fileIsSame.connect(
+            lambda: self.parent().setTitle(self.title())
+        )
+        self.stat_edit.fileIsDifferent.connect(
+            lambda: self.parent().setTitle(self.title() + "*")
+        )
+        return self.stat_edit
 
     @property
     def title(self):
-        if type(self.entity) == str:
-            return self.entity + " (Unknown Entity)"
-        else:
-            return "{} ({})".format(self.entity.name, self.entity_type)
+        return "{} ({})".format(self.entity_name, self.entity_type)
 
     def on_entity_renamed(self, event):
         # Check if the entity is the same as loaded in this window
-        if event.old_entity != self.entity_file or event.entity_type != self.entity_type:
+        if event.old_entity != self.entity_name or event.entity_type != self.entity_type:
             return
-        self.entity_file = event.new_entity
-        self.set_entity(self.entity_type, self.entity_file)
+        self.entity_name = event.new_entity
+        if self.entity_type == "NPC":
+            entity_path = Npc.absolute_path(self.entity_name, self.setting)
+            self.info_edit.edit_path = entity_path
+            self.stat_edit.edit_path = entity_path
+
+        elif self.entity_type == "Monster":
+            entity_path = StatBlock.absolute_path(self.entity_name, self.setting)
+            self.stat_edit.edit_path = entity_path
+        self.parent().setWindowTitle(self.title)
 
     def on_entity_deleted(self, event):
         # Check if the entity is the same as loaded in this window
-        if event.entity_name != self.entity_file or event.entity_type != self.entity_type:
+        if event.entity_name != self.entity_name or event.entity_type != self.entity_type:
             return
         # Delete the parent MdiSubWindow
         self.parent().close()
+
+    def render_npc(self, entity_path: Path):
+        npc = Npc.from_name(entity_path.stem, self.setting)
+        return self.character_info_template.render(npc=npc)
+
+    def render_npc_stat(self, entity_path: Path):
+        npc = Npc.from_name(entity_path.stem, self.setting)
+        return self.battle_info_template.render(stats=npc.stats)
+
+    def render_monster_stat(self, entity_path: Path):
+        monster = StatBlock.from_name(entity_path.stem, self.setting)
+        return self.battle_info_template.render(stats=monster)

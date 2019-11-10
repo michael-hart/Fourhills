@@ -41,7 +41,7 @@ class Location:
             The Setting object; this is used to find the setting root and
             subdirectories.
         """
-        loc_file = setting.world_dir / path / "location.yaml"
+        loc_file = Location.get_location_path(path, setting)
         if not loc_file.is_file():
             raise FourhillsSettingStructureError(f"Location file {loc_file} does not exist.")
         with open(loc_file) as f:
@@ -58,3 +58,11 @@ class Location:
         )
         loc.path = path
         return loc
+
+    @staticmethod
+    def get_location_path(path: Path, setting: Setting):
+        return setting.world_dir / path / "location.yaml"
+
+    @staticmethod
+    def get_scene_path(path: Path, setting: Setting):
+        return setting.world_dir / path / "scene.md"
