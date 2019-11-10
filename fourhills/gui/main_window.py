@@ -1,27 +1,16 @@
 """Main window for Fourhills GUI"""
 
 from pathlib import Path
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
 from fourhills import Setting
 from fourhills.exceptions import FourhillsSettingStructureError
-from fourhills.gui.anchor_clicked_event import AnchorClickedEvent
 from fourhills.gui.entity_list_pane import EntityListPane
 from fourhills.gui.entity_pane import EntityPane
+from fourhills.gui.events import AnchorClickedEventFilter
 from fourhills.gui.location_pane import LocationPane
 from fourhills.gui.location_tree_pane import LocationTreePane
-
-
-class AnchorClickedEventFilter(QtCore.QObject):
-
-    anchorClicked = QtCore.pyqtSignal(AnchorClickedEvent)
-
-    def eventFilter(self, obj, event):
-        if event and type(event) is AnchorClickedEvent:
-            self.anchorClicked.emit(event)
-            return True
-        return QtCore.QObject.eventFilter(self, obj, event)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -193,8 +182,10 @@ class MainWindow(QtWidgets.QMainWindow):
         elif event_type == "location":
             Path(parts[1:])
         else:
-            # TODO present error message
-            pass
+            self.anchor_click_error.showMessage(
+                f"Unknown window type requested: {event_type}"
+            )
+            return
 
     def open_world(self, event):
         """User has requested opening a world, so find fh_setting.yaml"""
@@ -238,9 +229,7 @@ def main():
     window = MainWindow()
 
     # Connect all anchor clicked signals to main window
-    core_app = QtCore.QCoreApplication.instance()
-    anchorFilter = AnchorClickedEventFilter(core_app)
-    core_app.installEventFilter(anchorFilter)
+    anchorFilter = AnchorClickedEventFilter.get_filter()
     anchorFilter.anchorClicked.connect(window.on_anchor_clicked)
     # window.connect(anchorFilter, anchorFilter.anchorClicked, window.on_anchor_clicked)
     window.show()

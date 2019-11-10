@@ -7,7 +7,11 @@ setuptools.setup(
     author_email="55206+smuj@users.noreply.github.com",
     description="A package for managing D&D campaigns",
     license="GPL",
-    packages=["fourhills", "fourhills.gui"],
+    packages=[
+        "fourhills",
+        "fourhills.gui",
+        "fourhills.gui.events",
+    ],
     include_package_data=True,
     install_requires=[
         "click",

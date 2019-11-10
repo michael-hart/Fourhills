@@ -6,7 +6,7 @@ from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
 
 from fourhills import Location, Setting
-from fourhills.gui.anchor_clicked_event import AnchorClickedEvent
+from fourhills.gui.events import AnchorClickedEvent
 
 
 class LocationPane(QtWidgets.QWidget):

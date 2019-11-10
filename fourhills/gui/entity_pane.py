@@ -1,9 +1,8 @@
-import os
 import jinja2
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
 
 from fourhills import Npc, StatBlock
+from fourhills.gui.events import EntityRenamedEventFilter, EntityDeletedEventFilter
 
 
 class EntityPane(QtWidgets.QWidget):
@@ -23,21 +22,35 @@ class EntityPane(QtWidgets.QWidget):
         self.battle_info_template = jinja_env.get_template("battle_info.j2")
         self.character_info_template = jinja_env.get_template("character_info.j2")
 
+        # Create events for entity renaming and deleting
+        renameFilter = EntityRenamedEventFilter.get_filter()
+        renameFilter.entityRenamed.connect(self.on_entity_renamed)
+        deleteFilter = EntityDeletedEventFilter.get_filter()
+        deleteFilter.entityDeleted.connect(self.on_entity_deleted)
+
         # Give self a VBoxLayout for components
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
-        name = os.path.basename(entity_file).split(".")[0]
+        self.set_entity(entity_type, entity_file)
+        self.create_entity_widget(entity_type, self.entity)
+
+    def create_entity_widget(self, entity_type, entity):
         if entity_type == "NPC":
-            self.entity = Npc.from_name(name, setting)
-            self.layout.addWidget(self.create_npc_widget(self.entity))
+            self.layout.addWidget(self.create_npc_widget(entity))
+        elif entity_type == "Monster":
+            self.layout.addWidget(self.create_monster_widget(entity))
+        else:
+            self.layout.addWidget(self.create_unknown_entity_widget(entity))
+
+    def set_entity(self, entity_type, entity_file):
+        if entity_type == "NPC":
+            self.entity = Npc.from_name(entity_file, self.setting)
         elif entity_type == "Monster":
             # Statblock contains all monster attributes, so use directly
-            self.entity = StatBlock.from_name(name, setting)
-            self.layout.addWidget(self.create_monster_widget(self.entity))
+            self.entity = StatBlock.from_name(entity_file, self.setting)
         else:
-            self.entity = entity_type
-            self.layout.addWidget(self.create_unknown_entity_widget(entity_file))
+            self.entity = entity_file
 
     def create_npc_widget(self, entity, parent=None):
 
@@ -76,3 +89,17 @@ class EntityPane(QtWidgets.QWidget):
             return self.entity + " (Unknown Entity)"
         else:
             return "{} ({})".format(self.entity.name, self.entity_type)
+
+    def on_entity_renamed(self, event):
+        # Check if the entity is the same as loaded in this window
+        if event.old_entity != self.entity_file or event.entity_type != self.entity_type:
+            return
+        self.entity_file = event.new_entity
+        self.set_entity(self.entity_type, self.entity_file)
+
+    def on_entity_deleted(self, event):
+        # Check if the entity is the same as loaded in this window
+        if event.entity_name != self.entity_file or event.entity_type != self.entity_type:
+            return
+        # Delete the parent MdiSubWindow
+        self.parent().close()
