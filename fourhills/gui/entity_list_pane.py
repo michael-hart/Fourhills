@@ -88,19 +88,20 @@ class EntityListPane(QtWidgets.QDockWidget):
         )
 
     def rename_entity(self):
+        entity = self.entity_list.selectedItems()[0]
+        _, old_entity_name = entity.data(Qt.UserRole)
+        old_entity_path = self.path / (old_entity_name + ".yaml")
+
         # Get a new name for the entity from the user
         new_entity_name, got_name = QtWidgets.QInputDialog.getText(
             self,
             "Enter new {} name".format(self.entity_type),
-            "{} name:".format(self.entity_type)
+            "{} name:".format(self.entity_type),
+            text=old_entity_name,
         )
 
         if not got_name:
             return
-
-        entity = self.entity_list.selectedItems()[0]
-        _, old_entity_name = entity.data(Qt.UserRole)
-        old_entity_path = self.path / (old_entity_name + ".yaml")
 
         # Check whether an entity of that name already exists
         new_entity_path = self.path / (new_entity_name + ".yaml")

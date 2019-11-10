@@ -131,17 +131,18 @@ class LocationTreePane(QtWidgets.QDockWidget):
         )
 
     def rename_location(self):
+        old_loc = self.location_tree.selectedItems()[0]
+
         # Get a new name for the location from the user
         new_loc_name, got_name = QtWidgets.QInputDialog.getText(
             self,
             "Enter new location name",
-            "Location name:"
+            "Location name:",
+            text=old_loc.text(0)
         )
 
         if not got_name:
             return
-
-        old_loc = self.location_tree.selectedItems()[0]
 
         directories = []
         item = old_loc
