@@ -76,10 +76,10 @@ class EntityPane(QtWidgets.QWidget):
     def create_monster_widget(self, entity_path, parent=None):
         self.stat_edit = LinkingBrowser(entity_path, self.render_monster_stat)
         self.stat_edit.fileIsSame.connect(
-            lambda: self.parent().setTitle(self.title())
+            lambda: self.parent().setWindowTitle(self.title)
         )
         self.stat_edit.fileIsDifferent.connect(
-            lambda: self.parent().setTitle(self.title() + "*")
+            lambda: self.parent().setWindowTitle(self.title + "*")
         )
         return self.stat_edit
 

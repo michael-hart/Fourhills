@@ -200,7 +200,6 @@ class LinkingBrowser(QtWidgets.QTextBrowser):
                 if text != self._original_text:
                     self.is_same = False
                     self.fileIsDifferent.emit()
-                    print("Emitting file is different")
             else:
                 if text == self._original_text:
                     self.is_same = True
