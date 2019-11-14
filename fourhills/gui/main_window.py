@@ -108,6 +108,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def create_actions(self):
         # File menu actions
+        self.create_world_action = QtWidgets.QAction("&New World", self)
+        self.create_world_action.setStatusTip("Create a new world")
+        self.create_world_action.setShortcut("Ctrl+N")
+        self.create_world_action.triggered.connect(self.create_world)
+
         self.open_world_action = QtWidgets.QAction("&Open World", self)
         self.open_world_action.setStatusTip("Open an existing world (fh_setting.yaml)")
         self.open_world_action.setShortcut("Ctrl+O")
@@ -128,6 +133,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def create_menu_bar(self):
         self.file_menu = self.menuBar().addMenu("&File")
+        self.file_menu.addAction(self.create_world_action)
         self.file_menu.addAction(self.open_world_action)
 
         self.view_menu = self.menuBar().addMenu("&View")
@@ -254,24 +260,53 @@ class MainWindow(QtWidgets.QMainWindow):
             )
             return
 
-    def open_world(self, event):
-        """User has requested opening a world, so find fh_setting.yaml"""
-        # Ignore filter used to select file
-        world_file, _ = QtWidgets.QFileDialog.getOpenFileName(
+    def create_world(self, event):
+        """User has requested a new world, so touch all the files and copy templates"""
+        # Get path of new world from user
+        folder_name = QtWidgets.QFileDialog.getExistingDirectory(
             self,
-            "Open World (fh_setting.yaml)",
+            "Select directory for new world",
             ".",
-            "World Files (*.yaml)"
+            QtWidgets.QFileDialog.ShowDirsOnly
         )
-        if not world_file:
-            # User cancelled selection
+        if not folder_name:
+            # User cancelled
             return
 
+        world_path = Path(folder_name)
+        # Create all required folders and fh_setting.yaml
+        for dir_name in Setting.DIRNAMES.values():
+            create_path = world_path / dir_name
+            create_path.mkdir()
+        setting_path = world_path / "fh_setting.yaml"
+        setting_path.touch()
+
+        # Open new world
+        self.open_world(None, world_path=setting_path)
+
+    def open_world(self, event, world_path: Path = None):
+        """User has requested opening a world, so find fh_setting.yaml"""
+        # Ignore filter used to select file
+        if not world_path:
+            world_file, _ = QtWidgets.QFileDialog.getOpenFileName(
+                self,
+                "Open World (fh_setting.yaml)",
+                ".",
+                "World Files (*.yaml)"
+            )
+            if not world_file:
+                # User cancelled selection
+                return
+            world_path = Path(world_file)
+
+        # Close all open windows before load
+        self.centralwidget.closeAllSubWindows()
+
         # Check world file is a fh_setting.yaml file
-        if not self.load(world_file):
+        if not self.load(world_path):
             # Give user an error dialog and return
             self.world_open_error.showMessage(
-                f"The file selected was not a valid world file: {world_file}. "
+                f"The file selected was not a valid world file: {world_path}. "
                 "Valid world files must be named \"fh_setting.yaml\" and contain a particular "
                 "directory structure."
             )
