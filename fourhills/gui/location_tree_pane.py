@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 import shutil
 
 from fourhills.gui.events import AnchorClickedEvent, LocationDeletedEvent, LocationRenamedEvent
+from fourhills.gui.make_tree import make_tree_from_path
 
 
 class LocationTreePane(QtWidgets.QDockWidget):
@@ -29,33 +30,12 @@ class LocationTreePane(QtWidgets.QDockWidget):
             # Path does not exist, ignore
             return
 
-        items = {}
-        for location_file in path.rglob("location.yaml"):
-            current_dict = items
-            rel_path = location_file.relative_to(path)
-
-            for part in rel_path.parent.parts:
-                if not part or part == ".":
-                    continue
-                if part not in current_dict:
-                    current_dict[part] = {}
-                current_dict = current_dict[part]
-
-        # Recursively create sub levels of tree and add to tree control
-        top_level = self.create_tree_widget_items(items)
+        top_level = make_tree_from_path(
+            path,
+            "location.yaml",
+            include_files=False
+        )
         self.location_tree.addTopLevelItems(top_level)
-
-    def create_tree_widget_items(self, items):
-        tree_widget_items = []
-
-        # Base case for recursive call is dictionary with no contents
-        for key, val in items.items():
-            item = QtWidgets.QTreeWidgetItem()
-            item.setText(0, key)
-            item.addChildren(self.create_tree_widget_items(val))
-            tree_widget_items += [item]
-
-        return tree_widget_items
 
     def show_context_menu(self, point_pos):
         if self.path is None:

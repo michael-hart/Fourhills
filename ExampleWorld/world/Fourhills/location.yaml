@@ -1,3 +1,5 @@
 name: Fourhills
 monsters:
-  - ja_min
+  - name: ja_min
+    quantity: 1
+

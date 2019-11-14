@@ -8,6 +8,10 @@ from .location_deleted_event import LocationDeletedEvent
 from .location_deleted_event_filter import LocationDeletedEventFilter
 from .location_renamed_event import LocationRenamedEvent
 from .location_renamed_event_filter import LocationRenamedEventFilter
+from .note_deleted_event import NoteDeletedEvent
+from .note_deleted_event_filter import NoteDeletedEventFilter
+from .note_renamed_event import NoteRenamedEvent
+from .note_renamed_event_filter import NoteRenamedEventFilter
 
 
 __all__ = [
@@ -21,4 +25,8 @@ __all__ = [
     "LocationDeletedEventFilter",
     "LocationRenamedEvent",
     "LocationRenamedEventFilter",
+    "NoteDeletedEvent",
+    "NoteDeletedEventFilter",
+    "NoteRenamedEvent",
+    "NoteRenamedEventFilter",
 ]

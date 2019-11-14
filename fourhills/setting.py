@@ -7,7 +7,12 @@ class Setting:
     """Represents the campaign setting directory tree."""
 
     CONFIG_FILENAME = "fh_setting.yaml"
-    DIRNAMES = {"world": "world", "monsters": "monsters", "npcs": "npcs"}
+    DIRNAMES = {
+        "world": "world",
+        "monsters": "monsters",
+        "npcs": "npcs",
+        "notes": "notes",
+    }
 
     def __init__(self, base_path=None):
         self.root = self.find_root(base_path)
@@ -59,3 +64,7 @@ class Setting:
     @property
     def npcs_dir(self):
         return self.root / self.DIRNAMES["npcs"]
+
+    @property
+    def notes_dir(self):
+        return self.root / self.DIRNAMES["notes"]

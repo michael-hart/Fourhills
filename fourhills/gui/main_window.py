@@ -11,11 +11,18 @@ from fourhills.gui.entity_pane import EntityPane
 from fourhills.gui.events import AnchorClickedEventFilter
 from fourhills.gui.location_pane import LocationPane
 from fourhills.gui.location_tree_pane import LocationTreePane
+from fourhills.gui.note_pane import NotePane
+from fourhills.gui.note_tree_pane import NoteTreePane
 
 
 class MainWindow(QtWidgets.QMainWindow):
 
     BASE_TITLE = "FourHills GUI"
+
+    location_pane = None
+    note_pane = None
+    npc_pane = None
+    monsters_pane = None
 
     def __init__(self):
         super().__init__()
@@ -32,8 +39,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # Populate with starting panes
         self.create_location_pane(area=Qt.LeftDockWidgetArea)
+        self.create_note_pane(area=Qt.LeftDockWidgetArea)
         self.create_npc_pane(area=Qt.RightDockWidgetArea)
-        self.create_monster_pane(area=Qt.RightDockWidgetArea)
+        self.create_monsters_pane(area=Qt.RightDockWidgetArea)
 
         # Create actions, then menu bar using those actions
         self.create_actions()
@@ -51,7 +59,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load("E:\\Git\\Fourhills\\ExampleWorld\\fh_setting.yaml")
 
     def create_location_pane(self, checked=False, area=None):
-        if not hasattr(self, "location_pane") or not self.location_pane.isVisible():
+        if self.location_pane is None or not self.location_pane.isVisible():
             self.location_pane = LocationTreePane("Locations", self)
             if area is None:
                 self.addDockWidget(Qt.RightDockWidgetArea, self.location_pane)
@@ -62,8 +70,20 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.location_pane.load(self.setting.world_dir)
             self.location_pane.widget().itemActivated.connect(self.on_location_activated)
 
+    def create_note_pane(self, checked=False, area=None):
+        if self.note_pane is None or not self.note_pane.isVisible():
+            self.note_pane = NoteTreePane("GM Notes", self)
+            if area is None:
+                self.addDockWidget(Qt.RightDockWidgetArea, self.note_pane)
+                self.note_pane.setFloating(True)
+            else:
+                self.addDockWidget(area, self.note_pane)
+            if hasattr(self, "setting") and self.setting is not None:
+                self.note_pane.load(self.setting.world_dir)
+            self.note_pane.widget().itemActivated.connect(self.on_note_activated)
+
     def create_npc_pane(self, checked=False, area=None):
-        if not hasattr(self, "npc_pane") or not self.npc_pane.isVisible():
+        if self.npc_pane is None or not self.npc_pane.isVisible():
             self.npc_pane = EntityListPane("NPCs", "NPC", self)
             if area is None:
                 self.addDockWidget(Qt.RightDockWidgetArea, self.npc_pane)
@@ -74,8 +94,8 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.npc_pane.load(self.setting.npcs_dir)
             self.npc_pane.widget().itemActivated.connect(self.on_entity_activated)
 
-    def create_monster_pane(self, checked=False, area=None):
-        if not hasattr(self, "monsters_pane") or not self.monsters_pane.isVisible():
+    def create_monsters_pane(self, checked=False, area=None):
+        if self.monsters_pane is None or not self.monsters_pane.isVisible():
             self.monsters_pane = EntityListPane("Monsters", "Monster", self)
             if area is None:
                 self.addDockWidget(Qt.RightDockWidgetArea, self.monsters_pane)
@@ -104,7 +124,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.view_monster_action = QtWidgets.QAction("&Monsters", self)
         self.view_monster_action.setStatusTip("View list of monsters within the world")
-        self.view_monster_action.triggered.connect(self.create_monster_pane)
+        self.view_monster_action.triggered.connect(self.create_monsters_pane)
 
     def create_menu_bar(self):
         self.file_menu = self.menuBar().addMenu("&File")
@@ -118,6 +138,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def create_error_boxes(self):
         self.world_open_error = QtWidgets.QErrorMessage(self)
         self.anchor_click_error = QtWidgets.QErrorMessage(self)
+        self.note_open_error = QtWidgets.QErrorMessage(self)
 
     def on_entity_activated(self, event):
         # Get entity information and construct widget
@@ -171,6 +192,50 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
 
+    def on_note_activated(self, event, column):
+        # Figure out relative path to the opened note
+        path = Path(".")
+        item = event
+        directories = [item.text(0)]
+        while item.parent() is not None:
+            directories += [item.parent().text(0)]
+            item = item.parent()
+        directories.reverse()
+        for directory in directories:
+            path = path / directory
+        self.open_note(path)
+
+    def open_note(self, path):
+        # Check if path is a directory
+        if (self.setting.notes_dir / path).is_dir():
+            return
+
+        # Check path is a markdown file
+        abs_path = self.setting.notes_dir / path
+        if not str(path).endswith(".md"):
+            self.note_open_error.showMessage(
+                f"Cannot open path {abs_path} as note. Only Markdown files "
+                "are supported as GM notes."
+            )
+            return
+
+        if not abs_path.is_file():
+            self.note_open_error.showMessage(
+                f"Cannot open path {abs_path} as it is not a file."
+            )
+            return
+
+        note_widget = NotePane(path, self.setting, self)
+
+        # Create a new Mdi window with the location information
+        sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
+        sub_window.setWidget(note_widget)
+        sub_window.setAttribute(Qt.WA_DeleteOnClose)
+        sub_window.setWindowTitle(note_widget.title)
+
+        self.centralwidget.addSubWindow(sub_window)
+        sub_window.show()
+
     def on_anchor_clicked(self, event):
         # Work out the type of link clicked
         parts = event.url.url().split("://")
@@ -181,6 +246,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.open_entity("Monster", parts[1])
         elif event_type == "location":
             self.open_location(Path(*parts[1:]))
+        elif event_type == "note":
+            self.open_note(Path(*parts[1:]))
         else:
             self.anchor_click_error.showMessage(
                 f"Unknown window type requested: {event_type}"
@@ -218,6 +285,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.world_dir = world_dir
         self.setWindowTitle(self.BASE_TITLE + f" ({path})")
         self.location_pane.load(self.setting.world_dir)
+        self.note_pane.load(self.setting.notes_dir)
         self.npc_pane.load(self.setting.npcs_dir)
         self.monsters_pane.load(self.setting.monsters_dir)
         return True
