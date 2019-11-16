@@ -92,7 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.addDockWidget(area, self.npc_pane)
             if hasattr(self, "setting") and self.setting is not None:
                 self.npc_pane.load(self.setting.npcs_dir)
-            self.npc_pane.widget().itemActivated.connect(self.on_entity_activated)
+            self.npc_pane.entity_list.itemActivated.connect(self.on_entity_activated)
 
     def create_monsters_pane(self, checked=False, area=None):
         if self.monsters_pane is None or not self.monsters_pane.isVisible():
@@ -104,7 +104,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.addDockWidget(area, self.monsters_pane)
             if hasattr(self, "setting") and self.setting is not None:
                 self.monsters_pane.load(self.setting.monsters_dir)
-            self.monsters_pane.widget().itemActivated.connect(self.on_entity_activated)
+            self.monsters_pane.entity_list.itemActivated.connect(self.on_entity_activated)
 
     def create_actions(self):
         # File menu actions

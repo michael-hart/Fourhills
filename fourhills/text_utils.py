@@ -127,3 +127,8 @@ def display_panes(panes: List[List[str]], columns: int, column_width: int):
 
     # Display the result
     click.echo_via_pager("\n".join(screen_lines))
+
+
+def slugify(text):
+    """Returns slug format of text, e.g. "Mug Of Coffee" -> mug-of-coffee"""
+    return text.strip().lower().replace(" ", "-")

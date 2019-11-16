@@ -3,7 +3,10 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 import shutil
 
+from fourhills import import_monster
+from fourhills.exceptions import FourhillsMonsterImportError
 from fourhills.gui.events import AnchorClickedEvent, EntityRenamedEvent, EntityDeletedEvent
+from fourhills.text_utils import slugify
 
 
 class EntityListPane(QtWidgets.QDockWidget):
@@ -13,9 +16,21 @@ class EntityListPane(QtWidgets.QDockWidget):
     def __init__(self, title, entity_type, parent=None):
         super().__init__(title, parent)
         self.entity_type = entity_type
+
+        self.centralwidget = QtWidgets.QWidget()
+        self.setWidget(self.centralwidget)
+        layout = QtWidgets.QVBoxLayout()
+        self.centralwidget.setLayout(layout)
+
         self.entity_list = QtWidgets.QListWidget()
         self.entity_list.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.setWidget(self.entity_list)
+        layout.addWidget(self.entity_list)
+
+        if entity_type == "Monster":
+            # Add Import Monster button
+            self.import_btn = QtWidgets.QPushButton("Import Monster", self.centralwidget)
+            self.import_btn.pressed.connect(self.on_import_monster)
+            layout.addWidget(self.import_btn)
 
         # Allow user options for adding/renaming/deleting entities
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -164,3 +179,42 @@ class EntityListPane(QtWidgets.QDockWidget):
 
         # Reload widget after deletion
         self.load(self.path)
+
+    def on_import_monster(self):
+        # Present user with dialog box of monster name to import
+        monster_name, got_name = QtWidgets.QInputDialog.getText(
+            self,
+            "Enter monster name",
+            "Monster name (exact):"
+        )
+
+        # Check if monster already exists in workspace
+        monster_slug = slugify(monster_name)
+        monster_underscore_slug = monster_slug.replace("-", "_")
+        out_path = self.path / (monster_underscore_slug + ".yaml")
+        if out_path.exists():
+            QtWidgets.QErrorMessage(self).showMessage(
+                f"Cannot create requested monster {monster_slug} as it already exists! "
+                "Delete or rename the existing monster and try again."
+            )
+            return
+
+        try:
+            import_monster(monster_slug, out_path)
+        except FourhillsMonsterImportError as e:
+            msg = "Error during import of monster: {}".format(
+                "\n".join(e.args)
+            )
+            msg += " Try checking DnD Beyond for the monster name to see if it is accessible."
+            QtWidgets.QErrorMessage(self).showMessage(msg)
+            return
+
+        # Reload monsters
+        self.load(self.path)
+
+        # Inform user of success
+        QtWidgets.QMessageBox.information(
+            self,
+            "Monster Import Success",
+            f"Successfully imported monster {monster_slug}!"
+        )

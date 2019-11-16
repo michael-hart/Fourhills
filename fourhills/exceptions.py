@@ -9,3 +9,7 @@ class FourhillsSettingStructureError(FourhillsError):
 
 class FourhillsFileLoadError(FourhillsError):
     pass
+
+
+class FourhillsMonsterImportError(FourhillsError):
+    pass
