@@ -79,7 +79,7 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 self.addDockWidget(area, self.note_pane)
             if hasattr(self, "setting") and self.setting is not None:
-                self.note_pane.load(self.setting.world_dir)
+                self.note_pane.load(self.setting.notes_dir)
             self.note_pane.widget().itemActivated.connect(self.on_note_activated)
 
     def create_npc_pane(self, checked=False, area=None):
@@ -131,6 +131,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.view_monster_action.setStatusTip("View list of monsters within the world")
         self.view_monster_action.triggered.connect(self.create_monsters_pane)
 
+        self.view_notes_action = QtWidgets.QAction("&GM Notes", self)
+        self.view_notes_action.setStatusTip("View list of GM notes")
+        self.view_notes_action.triggered.connect(self.create_note_pane)
+
     def create_menu_bar(self):
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.addAction(self.create_world_action)
@@ -140,6 +144,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.view_menu.addAction(self.view_location_action)
         self.view_menu.addAction(self.view_npc_action)
         self.view_menu.addAction(self.view_monster_action)
+        self.view_menu.addAction(self.view_notes_action)
 
     def create_error_boxes(self):
         self.world_open_error = QtWidgets.QErrorMessage(self)

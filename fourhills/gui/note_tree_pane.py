@@ -59,7 +59,6 @@ class NoteTreePane(QtWidgets.QDockWidget):
         top_level = make_tree_from_path(path, "*", include_file_endings=True)
         self.note_tree.addTopLevelItems(top_level)
 
-    # TODO context menu
     def show_context_menu(self, point_pos):
         if not self.path:
             return

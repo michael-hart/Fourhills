@@ -99,12 +99,10 @@ class LocationTreePane(QtWidgets.QDockWidget):
 
         # Load up self again to load new location
         self.load(self.path)
-        if selected_locs:
-            self.location_tree.setCurrentItem(selected_locs[0])
 
         # Post event to main requesting the new location be opened
         rel_path = new_path.relative_to(self.path)
-        url = "location://" + str(rel_path)
+        url = "location://" + str(rel_path).replace("\\", "/")
         QtCore.QCoreApplication.postEvent(
             QtCore.QCoreApplication.instance(),
             AnchorClickedEvent(QtCore.QUrl(url))
