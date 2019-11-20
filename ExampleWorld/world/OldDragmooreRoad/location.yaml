@@ -8,3 +8,4 @@ monsters:
     quantity: 3
   - name: example_monster_2
     quantity: 1
+map: map.jpg

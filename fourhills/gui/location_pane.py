@@ -3,14 +3,18 @@
 import jinja2
 import markdown
 from pathlib import Path
-from PyQt5 import QtWidgets
+from PyQt5 import QtGui, QtWidgets
+from PyQt5.QtCore import Qt
 
 from fourhills import Location, Setting
 from fourhills.gui.events import LocationRenamedEventFilter, LocationDeletedEventFilter
+from fourhills.gui.image_viewer_widget import ImageViewerWidget
 from fourhills.gui.linking_browser import LinkingBrowser
 
 
 class LocationPane(QtWidgets.QWidget):
+
+    map_pixmap = None
 
     def __init__(self, rel_path: Path, setting: Setting, parent=None):
         super().__init__(parent)
@@ -31,11 +35,13 @@ class LocationPane(QtWidgets.QWidget):
         deleteFilter = LocationDeletedEventFilter.get_filter()
         deleteFilter.locationDeleted.connect(self.on_location_deleted)
 
+        # Create error message for bad map path that user can stop showing
+        self.invalid_map_path_error = QtWidgets.QErrorMessage(self)
+
         # Give self a VBoxLayout for components
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
 
-        # self.location = Location.from_name(rel_path, setting)
         self.layout.addWidget(self.create_location_widget(self.rel_path, self.setting, self))
 
     def create_location_widget(self, rel_path, setting, parent=None):
@@ -48,9 +54,13 @@ class LocationPane(QtWidgets.QWidget):
 
         self.loc_widget = LinkingBrowser(loc_path, self.render_location, parent=parent)
         self.scene_widget = LinkingBrowser(scene_path, self.render_scene, parent=parent)
+        self.map_widget = ImageViewerWidget(self)
 
         self.loc_tab = self.tab_widget.addTab(self.loc_widget, "Location")
         self.scene_tab = self.tab_widget.addTab(self.scene_widget, "Description")
+        self.map_tab = self.tab_widget.addTab(self.map_widget, "Map")
+
+        self.update_map_tab()
 
         # Watch for file changes and add asterisks
         self.loc_widget.fileIsDifferent.connect(
@@ -65,6 +75,9 @@ class LocationPane(QtWidgets.QWidget):
         self.scene_widget.fileIsSame.connect(
             lambda: self.tab_widget.setTabText(self.scene_tab, "Scene")
         )
+
+        # Watch for loc_widget to save, then update the map
+        self.loc_widget.fileSaved.connect(self.update_map_tab)
 
         return self.tab_widget
 
@@ -99,3 +112,24 @@ class LocationPane(QtWidgets.QWidget):
     def on_location_deleted(self, event):
         if self.rel_path == event.location_path:
             self.parent().close()
+
+    def update_map_tab(self):
+        # Check if location has map
+        location = Location.from_name(self.rel_path, self.setting)
+        if not location.map:
+            self.tab_widget.setTabEnabled(self.map_tab, False)
+            return
+
+        # Check if map is valid file
+        abs_path = Location.get_location_path(self.rel_path, self.setting).parent
+        map_path = abs_path / location.map
+        if not map_path.is_file():
+            self.tab_widget.setTabEnabled(self.map_tab, False)
+            self.invalid_map_path_error.showMessage(
+                f"Cannot find file at given map path {map_path}"
+            )
+            return
+
+        # Try to load and set to label
+        self.map_widget.load_file(map_path)
+        self.tab_widget.setTabEnabled(self.map_tab, True)

@@ -13,6 +13,7 @@ class LinkingBrowser(QtWidgets.QTextBrowser):
 
     fileIsSame = QtCore.pyqtSignal()
     fileIsDifferent = QtCore.pyqtSignal()
+    fileSaved = QtCore.pyqtSignal()
 
     def __init__(self, edit_path, render_html_fn, start_in_edit=False, editable=True, parent=None):
         super().__init__(parent)
@@ -160,6 +161,9 @@ class LinkingBrowser(QtWidgets.QTextBrowser):
         # If file is valid, save updated original text
         self._original_text = text
         self.check_changes()
+
+        # Emit saved signal
+        self.fileSaved.emit()
 
         return True
 
