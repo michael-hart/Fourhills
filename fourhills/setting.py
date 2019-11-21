@@ -12,6 +12,7 @@ class Setting:
         "monsters": "monsters",
         "npcs": "npcs",
         "notes": "notes",
+        "quests": "quests",
     }
 
     def __init__(self, base_path=None):
@@ -68,3 +69,7 @@ class Setting:
     @property
     def notes_dir(self):
         return self.root / self.DIRNAMES["notes"]
+
+    @property
+    def quest_dir(self):
+        return self.root / self.DIRNAMES["quests"]

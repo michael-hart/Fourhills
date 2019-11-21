@@ -26,7 +26,7 @@ class Location:
         if self.name:
             return self.name
         else:
-            return str(self.name)
+            return str(self.path)
 
     @classmethod
     def from_name(cls, path: Path, setting: Setting):
