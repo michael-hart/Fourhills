@@ -1,13 +1,14 @@
-import sys
-import math
-import yaml
 from dataclasses import dataclass
+import math
+import sys
 from typing import Optional, Dict, List
-from fourhills.setting import Setting
-from fourhills.text_utils import format_indented_paragraph, format_list, centre_pad
+import yaml
+
 from fourhills.exceptions import (
     FourhillsFileLoadError, FourhillsSettingStructureError
 )
+from fourhills.setting import Setting
+from fourhills.utils.text_utils import format_indented_paragraph, format_list, centre_pad
 
 
 @dataclass

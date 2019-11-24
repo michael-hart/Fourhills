@@ -6,13 +6,15 @@ from PyQt5.QtCore import Qt
 
 from fourhills import Setting
 from fourhills.exceptions import FourhillsSettingStructureError
-from fourhills.gui.entity_list_pane import EntityListPane
-from fourhills.gui.entity_pane import EntityPane
+from fourhills.gui.panes import (
+    EntityPane,
+    EntityListPane,
+    LocationPane,
+    LocationTreePane,
+    NotePane,
+    NoteTreePane,
+)
 from fourhills.gui.events import AnchorClickedEventFilter
-from fourhills.gui.location_pane import LocationPane
-from fourhills.gui.location_tree_pane import LocationTreePane
-from fourhills.gui.note_pane import NotePane
-from fourhills.gui.note_tree_pane import NoteTreePane
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -58,14 +60,17 @@ class MainWindow(QtWidgets.QMainWindow):
         # TODO remove - for development purposes only!
         self.load("E:\\Git\\Fourhills\\ExampleWorld\\fh_setting.yaml")
 
+    def _show_docked_pane(self, pane, area=None):
+        if area is None:
+            self.addDockWidget(Qt.RightDockWidgetArea, pane)
+            pane.setFloating(True)
+        else:
+            self.addDockWidget(area, pane)
+
     def create_location_pane(self, checked=False, area=None):
         if self.location_pane is None or not self.location_pane.isVisible():
             self.location_pane = LocationTreePane("Locations", self)
-            if area is None:
-                self.addDockWidget(Qt.RightDockWidgetArea, self.location_pane)
-                self.location_pane.setFloating(True)
-            else:
-                self.addDockWidget(area, self.location_pane)
+            self._show_docked_pane(self.location_pane, area)
             if hasattr(self, "setting") and self.setting is not None:
                 self.location_pane.load(self.setting.world_dir)
             self.location_pane.widget().itemActivated.connect(self.on_location_activated)
@@ -73,11 +78,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def create_note_pane(self, checked=False, area=None):
         if self.note_pane is None or not self.note_pane.isVisible():
             self.note_pane = NoteTreePane("GM Notes", self)
-            if area is None:
-                self.addDockWidget(Qt.RightDockWidgetArea, self.note_pane)
-                self.note_pane.setFloating(True)
-            else:
-                self.addDockWidget(area, self.note_pane)
+            self._show_docked_pane(self.note_pane, area)
             if hasattr(self, "setting") and self.setting is not None:
                 self.note_pane.load(self.setting.notes_dir)
             self.note_pane.widget().itemActivated.connect(self.on_note_activated)
@@ -85,11 +86,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def create_npc_pane(self, checked=False, area=None):
         if self.npc_pane is None or not self.npc_pane.isVisible():
             self.npc_pane = EntityListPane("NPCs", "NPC", self)
-            if area is None:
-                self.addDockWidget(Qt.RightDockWidgetArea, self.npc_pane)
-                self.npc_pane.setFloating(True)
-            else:
-                self.addDockWidget(area, self.npc_pane)
+            self._show_docked_pane(self.npc_pane, area)
             if hasattr(self, "setting") and self.setting is not None:
                 self.npc_pane.load(self.setting.npcs_dir)
             self.npc_pane.entity_list.itemActivated.connect(self.on_entity_activated)
@@ -97,11 +94,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def create_monsters_pane(self, checked=False, area=None):
         if self.monsters_pane is None or not self.monsters_pane.isVisible():
             self.monsters_pane = EntityListPane("Monsters", "Monster", self)
-            if area is None:
-                self.addDockWidget(Qt.RightDockWidgetArea, self.monsters_pane)
-                self.monsters_pane.setFloating(True)
-            else:
-                self.addDockWidget(area, self.monsters_pane)
+            self._show_docked_pane(self.monsters_pane, area)
             if hasattr(self, "setting") and self.setting is not None:
                 self.monsters_pane.load(self.setting.monsters_dir)
             self.monsters_pane.entity_list.itemActivated.connect(self.on_entity_activated)
@@ -324,10 +317,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setting = setting
         self.world_dir = world_dir
         self.setWindowTitle(self.BASE_TITLE + f" ({path})")
-        self.location_pane.load(self.setting.world_dir)
-        self.note_pane.load(self.setting.notes_dir)
-        self.npc_pane.load(self.setting.npcs_dir)
-        self.monsters_pane.load(self.setting.monsters_dir)
+        if self.location_pane is not None:
+            self.location_pane.load(self.setting.world_dir)
+        if self.note_pane is not None:
+            self.note_pane.load(self.setting.notes_dir)
+        if self.npc_pane is not None:
+            self.npc_pane.load(self.setting.npcs_dir)
+        if self.monsters_pane is not None:
+            self.monsters_pane.load(self.setting.monsters_dir)
+
         return True
 
 

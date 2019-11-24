@@ -6,7 +6,7 @@ from urllib.error import HTTPError
 import yaml
 
 from fourhills.exceptions import FourhillsMonsterImportError
-from fourhills.text_utils import slugify
+from fourhills.utils.text_utils import slugify
 
 
 def strip_inner(s):

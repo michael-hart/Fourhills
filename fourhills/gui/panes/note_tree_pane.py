@@ -5,9 +5,9 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 import shutil
 
-from fourhills.gui.deselectable_tree_widget import DeselectableTree
 from fourhills.gui.events import AnchorClickedEvent, NoteDeletedEvent, NoteRenamedEvent
-from fourhills.gui.make_tree import make_tree_from_path
+from fourhills.gui.utils.make_tree import make_tree_from_path
+from fourhills.gui.widgets import DeselectableTree
 
 
 class ItemType(enum.Enum):
@@ -140,7 +140,7 @@ class NoteTreePane(QtWidgets.QDockWidget):
             return
 
         # Copy the template note into the new location
-        template_path = Path(__file__).parents[1] / "templates" / "gm_note.md"
+        template_path = Path(__file__).parents[2] / "templates" / "gm_note.md"
         shutil.copy(template_path, new_note_path)
 
         # Add the new note to the tree and set selected

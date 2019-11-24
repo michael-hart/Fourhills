@@ -1,12 +1,11 @@
 """Definition for note pane, giving GM notes in Markdown format"""
 
-# import jinja2
 import markdown
 from pathlib import Path
 from PyQt5 import QtWidgets
 
 from fourhills import Setting
-from fourhills.gui.linking_browser import LinkingBrowser
+from fourhills.gui.widgets import LinkingBrowser
 from fourhills.gui.events import NoteDeletedEventFilter, NoteRenamedEventFilter
 
 

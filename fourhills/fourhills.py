@@ -3,9 +3,10 @@ import re
 import yaml
 import click
 from typing import List, Tuple
-from fourhills import Setting, StatBlock, Npc
+from fourhills import Setting
+from fourhills.dataclasses import StatBlock, Npc
 from fourhills.exceptions import FourhillsFileLoadError
-from fourhills.text_utils import format_list, display_panes
+from fourhills.utils.text_utils import format_list, display_panes
 
 SCENE_FILENAME = "battle.yaml"
 

@@ -3,13 +3,12 @@
 import jinja2
 import markdown
 from pathlib import Path
-from PyQt5 import QtGui, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets
 
-from fourhills import Location, Setting
+from fourhills import Setting
+from fourhills.dataclasses import Location
 from fourhills.gui.events import LocationRenamedEventFilter, LocationDeletedEventFilter
-from fourhills.gui.image_viewer_widget import ImageViewerWidget
-from fourhills.gui.linking_browser import LinkingBrowser
+from fourhills.gui.widgets import ImageViewerWidget, LinkingBrowser
 
 
 class LocationPane(QtWidgets.QWidget):

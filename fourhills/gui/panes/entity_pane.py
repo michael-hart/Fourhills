@@ -2,8 +2,8 @@ import jinja2
 from pathlib import Path
 from PyQt5 import QtWidgets
 
-from fourhills import Npc, StatBlock
-from fourhills.gui.linking_browser import LinkingBrowser
+from fourhills.dataclasses import Npc, StatBlock
+from fourhills.gui.widgets import LinkingBrowser
 from fourhills.gui.events import EntityRenamedEventFilter, EntityDeletedEventFilter
 
 

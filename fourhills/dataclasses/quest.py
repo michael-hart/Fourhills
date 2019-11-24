@@ -1,7 +1,7 @@
-import yaml
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, List, Dict
+from typing import Optional, List
+import yaml
 
 from fourhills import Setting
 from fourhills.exceptions import (
@@ -14,14 +14,17 @@ class Quest:
     """Represents a possible quest for the party."""
 
     path: Path = None
-    name: Optional[str]
-    requirements: Optional[Dict[str]]
-    rewards: Optional[List[str]]
-    description: Optional[str]
+    name: Optional[str] = None
+    requirements: Optional[List[str]] = None
+    rewards: Optional[List[str]] = None
+    description: Optional[str] = None
     giver: Optional[str] = None
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return str(self.path)
 
     @classmethod
     def from_name(cls, path: Path, setting: Setting):

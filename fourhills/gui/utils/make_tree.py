@@ -3,10 +3,10 @@ from PyQt5 import QtWidgets
 
 
 def make_path_dict(
-        root_path: Path,
-        path_filter: str,
-        include_files: bool = True,
-        include_file_endings: bool = False,
+    root_path: Path,
+    path_filter: str,
+    include_files: bool = True,
+    include_file_endings: bool = False,
 ):
     items = {}
     for filter_file in root_path.rglob(path_filter):
@@ -47,10 +47,10 @@ def make_tree_from_items(items):
 
 
 def make_tree_from_path(
-        root_path: Path,
-        path_filter: str,
-        include_files: bool = True,
-        include_file_endings: bool = False,
+    root_path: Path,
+    path_filter: str,
+    include_files: bool = True,
+    include_file_endings: bool = False,
 ):
     items = make_path_dict(
         root_path,
