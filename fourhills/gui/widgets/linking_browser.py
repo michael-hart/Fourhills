@@ -10,6 +10,7 @@ class LinkingBrowser(QtWidgets.QTextBrowser):
     editing = False
     is_same = True
     _original_text = None
+    _editable = False
 
     fileIsSame = QtCore.pyqtSignal()
     fileIsDifferent = QtCore.pyqtSignal()

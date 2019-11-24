@@ -47,6 +47,12 @@ class LocationPane(QtWidgets.QWidget):
         self.tab_widget = QtWidgets.QTabWidget(parent)
 
         loc_path = Location.get_location_path(rel_path, setting)
+        if not loc_path.is_file():
+            QtWidgets.QErrorMessage(self).showMessage(
+                "Cannot open location {}; there must be a location.yaml file present".format(rel_path)
+            )
+            return
+
         scene_path = Location.get_scene_path(rel_path, setting)
         if not scene_path.is_file():
             scene_path.touch()
