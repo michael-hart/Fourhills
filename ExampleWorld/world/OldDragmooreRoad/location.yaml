@@ -9,3 +9,5 @@ monsters:
   - name: example_monster_2
     quantity: 1
 map: map.jpg
+quests:
+  - FirstFetchQuest

@@ -19,6 +19,7 @@ class Quest:
     rewards: Optional[List[str]] = None
     description: Optional[str] = None
     giver: Optional[str] = None
+    start_location: Optional[str] = None
 
     def __str__(self):
         if self.name:
@@ -47,6 +48,9 @@ class Quest:
                 quest_dict = yaml.safe_load(f)
             except yaml.YAMLError as exc:
                 raise FourhillsFileLoadError(f"Error loading from {quest_file}.") from exc
+
+        if quest_dict is None:
+            quest_dict = {}
 
         quest = cls(
             **{

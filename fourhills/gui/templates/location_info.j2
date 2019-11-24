@@ -37,3 +37,12 @@
   <h3>Danger Level</h3>
   <p>{{location.danger_level}}</p>
 {% endif %}
+
+{% if location.quests %}
+  <h3>Quests</h3>
+  <ul>
+    {% for quest in location.quests %}
+    <li><a href="quest://{{quest}}">{{quest}}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}

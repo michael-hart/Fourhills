@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 import yaml
 
 from fourhills.exceptions import (
@@ -21,6 +21,7 @@ class Location:
     danger_level: Optional[str] = None
     description: Optional[str] = None
     map: Optional[str] = None
+    quests: Optional[List[str]] = None
 
     def __str__(self):
         if self.name:
@@ -49,6 +50,9 @@ class Location:
                 loc_dict = yaml.safe_load(f)
             except yaml.YAMLError as exc:
                 raise FourhillsFileLoadError(f"Error loading from {loc_file}.") from exc
+
+        if loc_dict is None:
+            loc_dict = {}
 
         loc = cls(
             **{

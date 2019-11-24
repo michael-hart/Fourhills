@@ -13,6 +13,8 @@ from fourhills.gui.panes import (
     LocationTreePane,
     NotePane,
     NoteTreePane,
+    QuestPane,
+    QuestListPane,
 )
 from fourhills.gui.events import AnchorClickedEventFilter
 
@@ -25,6 +27,7 @@ class MainWindow(QtWidgets.QMainWindow):
     note_pane = None
     npc_pane = None
     monsters_pane = None
+    quests_pane = None
 
     def __init__(self):
         super().__init__()
@@ -42,8 +45,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Populate with starting panes
         self.create_location_pane(area=Qt.LeftDockWidgetArea)
         self.create_note_pane(area=Qt.LeftDockWidgetArea)
-        self.create_npc_pane(area=Qt.RightDockWidgetArea)
+        # self.create_npc_pane(area=Qt.RightDockWidgetArea)
         self.create_monsters_pane(area=Qt.RightDockWidgetArea)
+        self.create_quests_pane(area=Qt.RightDockWidgetArea)
 
         # Create actions, then menu bar using those actions
         self.create_actions()
@@ -99,6 +103,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.monsters_pane.load(self.setting.monsters_dir)
             self.monsters_pane.entity_list.itemActivated.connect(self.on_entity_activated)
 
+    def create_quests_pane(self, checked=False, area=None):
+        if self.quests_pane is None or not self.quests_pane.isVisible():
+            self.quests_pane = QuestListPane("Quests", self)
+            self._show_docked_pane(self.quests_pane, area)
+            if hasattr(self, "setting") and self.setting is not None:
+                self.quests_pane.load(self.setting.quest_dir)
+            self.quests_pane.quest_list.itemActivated.connect(self.on_quest_activated)
+
     def create_actions(self):
         # File menu actions
         self.create_world_action = QtWidgets.QAction("&New World", self)
@@ -128,6 +140,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.view_notes_action.setStatusTip("View list of GM notes")
         self.view_notes_action.triggered.connect(self.create_note_pane)
 
+        self.view_quests_action = QtWidgets.QAction("&Quests", self)
+        self.view_quests_action.setStatusTip("View list of quests")
+        self.view_quests_action.triggered.connect(self.create_quests_pane)
+
     def create_menu_bar(self):
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.addAction(self.create_world_action)
@@ -138,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.view_menu.addAction(self.view_npc_action)
         self.view_menu.addAction(self.view_monster_action)
         self.view_menu.addAction(self.view_notes_action)
+        self.view_menu.addAction(self.view_quests_action)
 
     def create_error_boxes(self):
         self.world_open_error = QtWidgets.QErrorMessage(self)
@@ -240,6 +257,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
 
+    def on_quest_activated(self, event):
+        # Get quest information and construct widget
+        quest_file = event.data(Qt.UserRole)
+        self.open_quest(quest_file)
+
+    def open_quest(self, quest):
+        # Present error message if quest is not real
+        try:
+            quest_widget = QuestPane(quest, self.setting, self)
+        except FourhillsSettingStructureError as fsse:
+            QtWidgets.QErrorMessage(self).showMessage("\n".join(fsse.args))
+            return
+
+        # Create a new Mdi window with the entity information
+        sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
+        sub_window.setWidget(quest_widget)
+        sub_window.setAttribute(Qt.WA_DeleteOnClose)
+        sub_window.setWindowTitle(quest_widget.title)
+
+        self.centralwidget.addSubWindow(sub_window)
+        sub_window.show()
+
     def on_anchor_clicked(self, event):
         # Work out the type of link clicked
         parts = event.url.url().split("://")
@@ -252,6 +291,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.open_location(Path(*parts[1:]))
         elif event_type == "note":
             self.open_note(Path(*parts[1:]))
+        elif event_type == "quest":
+            self.open_quest(parts[1])
         else:
             self.anchor_click_error.showMessage(
                 f"Unknown window type requested: {event_type}"
@@ -325,6 +366,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.npc_pane.load(self.setting.npcs_dir)
         if self.monsters_pane is not None:
             self.monsters_pane.load(self.setting.monsters_dir)
+        if self.quests_pane is not None:
+            self.quests_pane.load(self.setting.quest_dir)
 
         return True
 

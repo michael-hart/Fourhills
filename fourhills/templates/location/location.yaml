@@ -19,3 +19,7 @@ name: Replace Me
 
 # String representing brief description of location - larger description should be in scene.md
 # description: 
+
+# List of quests available to start in the location
+# quests:
+#   -

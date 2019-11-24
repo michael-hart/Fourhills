@@ -1,0 +1,19 @@
+# name, string representing name of quest
+# name:
+
+# requirements, optional list of requirements
+# requirements:
+#   - 
+
+# rewards, optional list of rewards for completing the quest
+# rewards:
+#   -
+
+# description, optional brief description of quest separate from description.md
+# description:
+
+# giver, optional string of NPC who gave the quest
+# giver:
+
+# Starting location, optional string of location path for starting quest
+# start_location: 
