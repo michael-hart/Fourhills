@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 import shutil
 
 from fourhills.exceptions import FourhillsMonsterImportError
-from fourhills.gui.events import AnchorClickedEvent, EntityRenamedEvent, EntityDeletedEvent
+from fourhills.gui.events import AnchorClickedEvent, ObjectRenamedEvent, ObjectDeletedEvent
 from fourhills.utils.import_monster import import_monster
 from fourhills.utils.text_utils import slugify
 
@@ -137,7 +137,7 @@ class EntityListPane(QtWidgets.QDockWidget):
         # Emit an event to make sure all relevant open windows reload
         QtCore.QCoreApplication.postEvent(
             QtCore.QCoreApplication.instance(),
-            EntityRenamedEvent(self.entity_type, old_entity_name, new_entity_name)
+            ObjectRenamedEvent(self.entity_type, old_entity_name, new_entity_name)
         )
 
     def delete_entities(self):
@@ -174,7 +174,7 @@ class EntityListPane(QtWidgets.QDockWidget):
             entity_path.unlink()
             QtCore.QCoreApplication.postEvent(
                 QtCore.QCoreApplication.instance(),
-                EntityDeletedEvent(self.entity_type, entity_path.stem)
+                ObjectDeletedEvent(self.entity_type, entity_path.stem)
             )
 
         # Reload widget after deletion

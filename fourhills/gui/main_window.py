@@ -45,9 +45,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # Populate with starting panes
         self.create_location_pane(area=Qt.LeftDockWidgetArea)
         self.create_note_pane(area=Qt.LeftDockWidgetArea)
-        # self.create_npc_pane(area=Qt.RightDockWidgetArea)
+        self.create_npc_pane(area=Qt.RightDockWidgetArea)
         self.create_monsters_pane(area=Qt.RightDockWidgetArea)
-        self.create_quests_pane(area=Qt.RightDockWidgetArea)
 
         # Create actions, then menu bar using those actions
         self.create_actions()

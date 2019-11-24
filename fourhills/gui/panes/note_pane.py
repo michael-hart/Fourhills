@@ -5,8 +5,8 @@ from pathlib import Path
 from PyQt5 import QtWidgets
 
 from fourhills import Setting
+from fourhills.gui.events import ObjectDeletedEventFilter, ObjectRenamedEventFilter
 from fourhills.gui.widgets import LinkingBrowser
-from fourhills.gui.events import NoteDeletedEventFilter, NoteRenamedEventFilter
 
 
 class NotePane(QtWidgets.QWidget):
@@ -18,10 +18,10 @@ class NotePane(QtWidgets.QWidget):
         self.setting = setting
 
         # Create events for note renaming and deleting
-        renameFilter = NoteRenamedEventFilter.get_filter()
-        renameFilter.noteRenamed.connect(self.on_note_renamed)
-        deleteFilter = NoteDeletedEventFilter.get_filter()
-        deleteFilter.noteDeleted.connect(self.on_note_deleted)
+        renameFilter = ObjectRenamedEventFilter.get_filter()
+        renameFilter.objectRenamed.connect(self.on_note_renamed)
+        deleteFilter = ObjectDeletedEventFilter.get_filter()
+        deleteFilter.objectDeleted.connect(self.on_note_deleted)
 
         # Give self a VBoxLayout for components
         self.layout = QtWidgets.QVBoxLayout()
@@ -57,17 +57,17 @@ class NotePane(QtWidgets.QWidget):
         cut_path = Path(*self.rel_path.parts[-3:])
         return str(cut_path) + " (Note)"
 
-    # rename/delete handlers
+    # Rename/delete handlers
 
     def on_note_renamed(self, event):
-        if self.rel_path == event.old_note_path:
-            self.rel_path = event.new_note_path
-            note_path = self.setting.notes_dir / event.new_note_path
+        if event.object_type == "Note" and self.rel_path == event.old_object:
+            self.rel_path = event.new_object
+            note_path = self.setting.notes_dir / self.rel_path
             self.note_widget.edit_path = note_path
 
             # Update window title
             self.parent().setWindowTitle(self.title)
 
     def on_note_deleted(self, event):
-        if self.rel_path == event.note_path:
+        if event.object_type == "Note" and self.rel_path == event.object_name:
             self.parent().close()

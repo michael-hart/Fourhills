@@ -3,7 +3,7 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 import shutil
 
-from fourhills.gui.events import AnchorClickedEvent, LocationDeletedEvent, LocationRenamedEvent
+from fourhills.gui.events import AnchorClickedEvent, ObjectDeletedEvent, ObjectRenamedEvent
 from fourhills.gui.utils.make_tree import make_tree_from_path
 
 
@@ -154,7 +154,7 @@ class LocationTreePane(QtWidgets.QDockWidget):
         new_loc_rel_path = new_loc_path.relative_to(self.path)
         QtCore.QCoreApplication.postEvent(
             QtCore.QCoreApplication.instance(),
-            LocationRenamedEvent(old_loc_rel_path, new_loc_rel_path)
+            ObjectRenamedEvent("Location", old_loc_rel_path, new_loc_rel_path)
         )
 
     def delete_locations(self):
@@ -198,7 +198,7 @@ class LocationTreePane(QtWidgets.QDockWidget):
             shutil.rmtree(loc_path)
             QtCore.QCoreApplication.postEvent(
                 QtCore.QCoreApplication.instance(),
-                LocationDeletedEvent(loc_path.relative_to(self.path))
+                ObjectDeletedEvent("Location", loc_path.relative_to(self.path))
             )
 
         # Reload widget after deletion

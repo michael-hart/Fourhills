@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets
 
 from fourhills import Setting
 from fourhills.dataclasses import Location
-from fourhills.gui.events import LocationRenamedEventFilter, LocationDeletedEventFilter
+from fourhills.gui.events import ObjectDeletedEventFilter, ObjectRenamedEventFilter
 from fourhills.gui.widgets import ImageViewerWidget, LinkingBrowser
 
 
@@ -29,10 +29,10 @@ class LocationPane(QtWidgets.QWidget):
         self.location_template = jinja_env.get_template("location_info.j2")
 
         # Create events for location renaming and deleting
-        renameFilter = LocationRenamedEventFilter.get_filter()
-        renameFilter.locationRenamed.connect(self.on_location_renamed)
-        deleteFilter = LocationDeletedEventFilter.get_filter()
-        deleteFilter.locationDeleted.connect(self.on_location_deleted)
+        renameFilter = ObjectRenamedEventFilter.get_filter()
+        renameFilter.objectRenamed.connect(self.on_location_renamed)
+        deleteFilter = ObjectDeletedEventFilter.get_filter()
+        deleteFilter.objectDeleted.connect(self.on_location_deleted)
 
         # Create error message for bad map path that user can stop showing
         self.invalid_map_path_error = QtWidgets.QErrorMessage(self)
@@ -98,18 +98,20 @@ class LocationPane(QtWidgets.QWidget):
         return str(cut_path) + " (Location)"
 
     def on_location_renamed(self, event):
-        if self.rel_path == event.old_location_path:
-            self.rel_path = event.new_location_path
-            loc_path = Location.get_location_path(self.rel_path, self.setting)
-            scene_path = Location.get_scene_path(self.rel_path, self.setting)
-            self.loc_widget.edit_path = loc_path
-            self.scene_widget.edit_path = scene_path
+        if event.object_type != "Location" or self.rel_path != event.old_object:
+            return
 
-            # Update window title
-            self.parent().setWindowTitle(self.title)
+        self.rel_path = event.new_object
+        loc_path = Location.get_location_path(self.rel_path, self.setting)
+        scene_path = Location.get_scene_path(self.rel_path, self.setting)
+        self.loc_widget.edit_path = loc_path
+        self.scene_widget.edit_path = scene_path
+
+        # Update window title
+        self.parent().setWindowTitle(self.title)
 
     def on_location_deleted(self, event):
-        if self.rel_path == event.location_path:
+        if event.object_type == "Location" and self.rel_path == event.object_name:
             self.parent().close()
 
     def update_map_tab(self):

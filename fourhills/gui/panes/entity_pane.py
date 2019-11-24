@@ -4,7 +4,7 @@ from PyQt5 import QtWidgets
 
 from fourhills.dataclasses import Npc, StatBlock
 from fourhills.gui.widgets import LinkingBrowser
-from fourhills.gui.events import EntityRenamedEventFilter, EntityDeletedEventFilter
+from fourhills.gui.events import ObjectRenamedEventFilter, ObjectDeletedEventFilter
 
 
 class EntityPane(QtWidgets.QWidget):
@@ -35,10 +35,10 @@ class EntityPane(QtWidgets.QWidget):
         self.character_info_template = jinja_env.get_template("character_info.j2")
 
         # Create events for entity renaming and deleting
-        renameFilter = EntityRenamedEventFilter.get_filter()
-        renameFilter.entityRenamed.connect(self.on_entity_renamed)
-        deleteFilter = EntityDeletedEventFilter.get_filter()
-        deleteFilter.entityDeleted.connect(self.on_entity_deleted)
+        renameFilter = ObjectRenamedEventFilter.get_filter()
+        renameFilter.objectRenamed.connect(self.on_entity_renamed)
+        deleteFilter = ObjectDeletedEventFilter.get_filter()
+        deleteFilter.objectDeleted.connect(self.on_entity_deleted)
 
         # Give self a VBoxLayout for components
         self.layout = QtWidgets.QVBoxLayout()
@@ -89,9 +89,9 @@ class EntityPane(QtWidgets.QWidget):
 
     def on_entity_renamed(self, event):
         # Check if the entity is the same as loaded in this window
-        if event.old_entity != self.entity_name or event.entity_type != self.entity_type:
+        if event.old_object != self.entity_name or event.object_type != self.entity_type:
             return
-        self.entity_name = event.new_entity
+        self.entity_name = event.new_object
         if self.entity_type == "NPC":
             entity_path = Npc.absolute_path(self.entity_name, self.setting)
             self.info_edit.edit_path = entity_path
@@ -104,7 +104,7 @@ class EntityPane(QtWidgets.QWidget):
 
     def on_entity_deleted(self, event):
         # Check if the entity is the same as loaded in this window
-        if event.entity_name != self.entity_name or event.entity_type != self.entity_type:
+        if event.object_name != self.entity_name or event.object_type != self.entity_type:
             return
         # Delete the parent MdiSubWindow
         self.parent().close()

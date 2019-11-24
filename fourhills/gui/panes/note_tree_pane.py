@@ -5,7 +5,7 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 import shutil
 
-from fourhills.gui.events import AnchorClickedEvent, NoteDeletedEvent, NoteRenamedEvent
+from fourhills.gui.events import AnchorClickedEvent, ObjectDeletedEvent, ObjectRenamedEvent
 from fourhills.gui.utils.make_tree import make_tree_from_path
 from fourhills.gui.widgets import DeselectableTree
 
@@ -233,14 +233,15 @@ class NoteTreePane(QtWidgets.QDockWidget):
             parent_item.removeChild(selected_item)
             parent_item.addChild(new_item)
         else:
-            self.note_tree.removeItemWidget(selected_item, 0)
+            self.note_tree.takeTopLevelItem(self.note_tree.indexOfTopLevelItem(selected_item))
             self.note_tree.addTopLevelItem(new_item)
 
         # Emit an event to make sure all relevant open windows reload
         if _type == ItemType.Markdown:
             QtCore.QCoreApplication.postEvent(
                 QtCore.QCoreApplication.instance(),
-                NoteRenamedEvent(
+                ObjectRenamedEvent(
+                    "Note",
                     old_note_path.relative_to(self.path),
                     new_note_path.relative_to(self.path)
                 )
@@ -268,7 +269,7 @@ class NoteTreePane(QtWidgets.QDockWidget):
             note_path.unlink()
             QtCore.QCoreApplication.postEvent(
                 QtCore.QCoreApplication.instance(),
-                NoteDeletedEvent(note_path.relative_to(self.path))
+                ObjectDeletedEvent("Note", note_path.relative_to(self.path))
             )
 
         # Remove deleted item from tree
@@ -276,12 +277,7 @@ class NoteTreePane(QtWidgets.QDockWidget):
         if selected_item.parent():
             selected_item.parent().removeChild(selected_item)
         else:
-            self.note_tree.removeItemWidget(selected_item, 0)
+            self.note_tree.takeTopLevelItem(self.note_tree.indexOfTopLevelItem(selected_item))
 
         # Reload entities after changes
         self.load(self.path)
-
-    # Override mouse handler to allow user to deselect by clicking in blank space
-    def mousePressEvent(self, event):
-        self.clearSelection()
-        super().mousePressEvent(self, event)

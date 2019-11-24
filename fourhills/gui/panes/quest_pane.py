@@ -8,6 +8,7 @@ from PyQt5 import QtWidgets
 from fourhills import Setting
 from fourhills.dataclasses import Quest
 from fourhills.gui.widgets import LinkingBrowser
+from fourhills.gui.events import ObjectDeletedEventFilter, ObjectRenamedEventFilter
 
 
 class QuestPane(QtWidgets.QWidget):
@@ -25,7 +26,11 @@ class QuestPane(QtWidgets.QWidget):
 
         self.quest_template = jinja_env.get_template("quest_info.j2")
 
-        # Events are TODO
+        # Create events for quest renaming and deleting
+        renameFilter = ObjectRenamedEventFilter.get_filter()
+        renameFilter.objectRenamed.connect(self.on_quest_renamed)
+        deleteFilter = ObjectDeletedEventFilter.get_filter()
+        deleteFilter.objectDeleted.connect(self.on_quest_deleted)
 
         self.layout = QtWidgets.QVBoxLayout()
         self.setLayout(self.layout)
@@ -80,4 +85,19 @@ class QuestPane(QtWidgets.QWidget):
     def title(self):
         return str(Quest.from_name(Path(self.name), self.setting))
 
-    # TODO quest renamed, deleted event handlers
+    # Rename/delete handlers
+
+    def on_quest_renamed(self, event):
+        if event.object_type == "Quest" and self.name == event.old_object:
+            self.name = event.new_object
+            quest_path = Quest.get_quest_path(self.name, self.setting)
+            description_path = Quest.get_description_path(self.name, self.setting)
+            self.quest_widget.edit_path = quest_path
+            self.description_widget.edit_path = description_path
+
+            # Update window title
+            self.parent().setWindowTitle(self.title)
+
+    def on_quest_deleted(self, event):
+        if event.object_type == "Quest" and self.name == event.object_name:
+            self.parent().close()
