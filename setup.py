@@ -14,12 +14,13 @@ setuptools.setup(
     ],
     include_package_data=True,
     install_requires=[
+        "appdirs",
         "click",
         "dataclasses",
+        "jinja2",
         "markdown",
         "pyyaml",
         "PyQt5",
-        "jinja2",
     ],
     entry_points={
         'console_scripts': [

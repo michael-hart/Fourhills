@@ -9,6 +9,8 @@ from fourhills.exceptions import FourhillsFileLoadError
 from fourhills.utils.text_utils import format_list, display_panes
 
 SCENE_FILENAME = "battle.yaml"
+AUTHOR = 'smuj'
+PACKAGE = 'Fourhills'
 
 
 class Scene:

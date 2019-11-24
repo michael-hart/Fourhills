@@ -1,5 +1,6 @@
 """Main window for Fourhills GUI"""
 
+from functools import partial
 from pathlib import Path
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
@@ -17,11 +18,15 @@ from fourhills.gui.panes import (
     QuestListPane,
 )
 from fourhills.gui.events import AnchorClickedEventFilter
+from fourhills.gui.utils import Config
 
 
 class MainWindow(QtWidgets.QMainWindow):
 
     BASE_TITLE = "FourHills GUI"
+
+    setting = None
+    world_dir = None
 
     location_pane = None
     note_pane = None
@@ -65,7 +70,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowState(Qt.WindowMaximized)
 
         # TODO remove - for development purposes only!
-        self.load("E:\\Git\\Fourhills\\ExampleWorld\\fh_setting.yaml")
+        self.open_world(
+            event=None,
+            world_path=Path("E:\\Git\\Fourhills\\ExampleWorld\\fh_setting.yaml")
+        )
 
     def _show_docked_pane(self, pane, area=None):
         if area is None:
@@ -126,6 +134,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.open_world_action.setShortcut("Ctrl+O")
         self.open_world_action.triggered.connect(self.open_world)
 
+        self.exit_program_action = QtWidgets.QAction("Exit Fourhills", self)
+        self.exit_program_action.setStatusTip("Exit Fourhills program")
+        self.exit_program_action.triggered.connect(lambda x: QtWidgets.QApplication.quit())
+
         # View menu actions
         self.view_location_action = QtWidgets.QAction("&Locations", self)
         self.view_location_action.setStatusTip("View tree of locations within the world")
@@ -151,6 +163,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.file_menu = self.menuBar().addMenu("&File")
         self.file_menu.addAction(self.create_world_action)
         self.file_menu.addAction(self.open_world_action)
+        self.file_menu.addSeparator()
+        self.recent_worlds_menu = self.file_menu.addMenu("&Recent Worlds")
+        self.update_recent_worlds_menu()
+        self.file_menu.addAction(self.exit_program_action)
 
         self.view_menu = self.menuBar().addMenu("&View")
         self.view_menu.addAction(self.view_location_action)
@@ -158,6 +174,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.view_menu.addAction(self.view_monster_action)
         self.view_menu.addAction(self.view_notes_action)
         self.view_menu.addAction(self.view_quests_action)
+
+    def update_recent_worlds_menu(self):
+        self.recent_worlds_menu.clear()
+        for world in Config.get_recent_worlds():
+            if world.parent == self.world_dir:
+                continue
+            act = self.recent_worlds_menu.addAction(str(world))
+            act.triggered.connect(partial(self.open_world, event=None, world_path=world))
 
     def create_error_boxes(self):
         self.world_open_error = QtWidgets.QErrorMessage(self)
@@ -352,6 +376,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 "Valid world files must be named \"fh_setting.yaml\" and contain a particular "
                 "directory structure."
             )
+            Config.remove_recent_world(world_path)
+            self.update_recent_worlds_menu()
+            return
+
+        # Save world to recent worlds list
+        Config.add_recent_world(world_path)
+        self.update_recent_worlds_menu()
 
     def load(self, path) -> bool:
         world_dir = Path(path).parent
@@ -383,7 +414,7 @@ def main():
     # Connect all anchor clicked signals to main window
     anchorFilter = AnchorClickedEventFilter.get_filter()
     anchorFilter.anchorClicked.connect(window.on_anchor_clicked)
-    # window.connect(anchorFilter, anchorFilter.anchorClicked, window.on_anchor_clicked)
+
     window.show()
     app.setApplicationName(MainWindow.BASE_TITLE)
     sys.exit(app.exec_())
