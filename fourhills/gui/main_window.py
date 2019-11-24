@@ -1,7 +1,7 @@
 """Main window for Fourhills GUI"""
 
 from pathlib import Path
-from PyQt5 import QtWidgets
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 from fourhills import Setting
@@ -37,6 +37,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(800, 600)
         self.centralwidget = QtWidgets.QMdiArea(self)
         self.centralwidget.setObjectName("centralwidget")
+
+        # Create and set icon
+        icon_path = Path(__file__).parent / "resources" / "icon.png"
+        self.setWindowIcon(QtGui.QIcon(str(icon_path)))
 
         # Root layout creation
         self.root_layout = QtWidgets.QVBoxLayout(self.centralwidget)
