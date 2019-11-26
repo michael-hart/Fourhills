@@ -11,6 +11,7 @@ setuptools.setup(
     include_package_data=True,
     install_requires=[
         "appdirs",
+        "beautifulsoup4",
         "click",
         "dataclasses",
         "jinja2",
