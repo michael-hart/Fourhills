@@ -209,6 +209,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
+        sub_window.resize(400, 400)
 
     def on_location_activated(self, event, column):
         # Figure out relative path to the opened location
@@ -239,6 +240,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
+        sub_window.resize(400, 400)
 
     def on_note_activated(self, event, column):
         # Figure out relative path to the opened note
@@ -283,6 +285,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
+        sub_window.resize(400, 400)
 
     def on_quest_activated(self, event):
         # Get quest information and construct widget
@@ -305,6 +308,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.centralwidget.addSubWindow(sub_window)
         sub_window.show()
+        sub_window.resize(400, 400)
 
     def on_anchor_clicked(self, event):
         # Work out the type of link clicked
