@@ -18,6 +18,7 @@ from fourhills.gui.panes import (
     QuestListPane,
 )
 from fourhills.gui.events import AnchorClickedEventFilter
+from fourhills.gui.widgets import WorkspaceTabWidget
 from fourhills.gui.utils import Config
 
 
@@ -40,8 +41,11 @@ class MainWindow(QtWidgets.QMainWindow):
         # Basic window construction
         self.setObjectName("MainWindow")
         self.resize(800, 600)
-        self.centralwidget = QtWidgets.QMdiArea(self)
+
+        self.mdi_areas = []
+        self.centralwidget = WorkspaceTabWidget(self)
         self.centralwidget.setObjectName("centralwidget")
+        print(self.centralwidget.current_mdi_area())
 
         # Create and set icon
         icon_path = Path(__file__).parent / "resources" / "icon.png"
@@ -370,7 +374,7 @@ class MainWindow(QtWidgets.QMainWindow):
             world_path = Path(world_file)
 
         # Close all open windows before load
-        self.centralwidget.closeAllSubWindows()
+        self.centralwidget.clear()
 
         # Check world file is a fh_setting.yaml file
         if not self.load(world_path):
