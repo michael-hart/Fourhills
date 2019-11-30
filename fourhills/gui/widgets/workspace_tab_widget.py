@@ -32,6 +32,7 @@ class WorkspaceTabWidget(QtWidgets.QTabWidget):
         while self.count() > 1:
             self.removeTab(0)
         self.mdi_areas = []
+        self.create_tab(name="workspace")
 
     # Override insertTab and addTab to always keep + button on the right
     def addTab(self, widget, label):
@@ -48,9 +49,20 @@ class WorkspaceTabWidget(QtWidgets.QTabWidget):
 
     def create_tab(self, checked: bool = False, name: str = None):
         if name is None:
-            name = "Blah"
+            name, got_name = QtWidgets.QInputDialog.getText(
+                self,
+                "Enter new tab name",
+                "Tab name:",
+            )
+            if not got_name:
+                return
 
         self.mdi_areas += [QtWidgets.QMdiArea(self)]
         self.addTab(self.mdi_areas[-1], name)
+        self.setCurrentIndex(self.count() - 2)
 
-    # TODO return the current MDI area for creating controls in
+    def current_mdi_area(self):
+        idx = self.currentIndex()
+        if idx >= len(self.mdi_areas):
+            return None
+        return self.mdi_areas[idx]
