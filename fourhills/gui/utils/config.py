@@ -103,3 +103,17 @@ class Config:
                 conf["recent_worlds"].remove(world)
                 Config.save_config(conf)
                 return
+
+    @staticmethod
+    def last_opened():
+        conf = Config.load_config()
+        if "last_opened" not in conf:
+            return None
+        else:
+            return Path(conf["last_opened"])
+
+    @staticmethod
+    def set_last_opened(last_opened):
+        conf = Config.load_config()
+        conf["last_opened"] = str(last_opened)
+        Config.save_config(conf)

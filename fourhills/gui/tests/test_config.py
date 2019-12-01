@@ -95,3 +95,23 @@ def test_get_recent_worlds(clean_config):
     assert len(recent_worlds) == 5
     for world in recent_worlds:
         assert str(world) in world_names
+
+
+def test_no_last_opened_gives_none(clean_config):
+    assert Config.last_opened() is None
+
+
+def test_last_opened_gives_path(clean_config):
+    test_path = "test_path"
+    conf = {"last_opened": test_path}
+    Config.save_config(conf)
+
+    last_opened = Config.last_opened()
+    assert last_opened is not None
+    assert str(last_opened) == test_path
+
+
+def test_set_last_opened_is_saved(clean_config):
+    test_path = "test_path"
+    Config.set_last_opened(test_path)
+    assert str(Config.last_opened()) == test_path

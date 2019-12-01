@@ -69,11 +69,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.centralwidget)
         self.setWindowState(Qt.WindowMaximized)
 
-        # TODO remove - for development purposes only!
-        self.open_world(
-            event=None,
-            world_path=Path("E:\\Git\\Fourhills\\ExampleWorld\\fh_setting.yaml")
-        )
+        # Check if there's a world to open already
+        last_opened = Config.last_opened()
+        if last_opened is not None:
+            self.open_world(event=None, world_path=last_opened)
 
     def _show_docked_pane(self, pane, area=None):
         if area is None:
@@ -387,6 +386,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Save world to recent worlds list
         Config.add_recent_world(world_path)
         self.update_recent_worlds_menu()
+
+        # Save world to last opened
+        Config.set_last_opened(world_path)
 
     def load(self, path) -> bool:
         world_dir = Path(path).parent
