@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+import bs4
 from pathlib import Path
 import re
 from urllib.request import Request, urlopen
@@ -13,6 +13,12 @@ def strip_inner(s):
     s_parts = re.split("\\s", s)
     s_word_parts = [word.strip() for word in s_parts if word.strip()]
     return " ".join(s_word_parts)
+
+
+def escape(s):
+    s = s.replace("\u2013", "-")
+    s = s.replace("\u2019", "'")
+    return s
 
 
 def parse_melee(melee_desc):
@@ -67,7 +73,7 @@ def import_monster(monster_name: str, output_path: Path, monster_url=None):
         raise FourhillsMonsterImportError(f"No response from website for URL {url}") from e
 
     # Parse content using beautifulsoup
-    soup = BeautifulSoup(content, 'html.parser')
+    soup = bs4.BeautifulSoup(content, 'html.parser')
 
     stat_blocks = soup.find_all("div", "mon-stat-block")
     if not stat_blocks:
@@ -200,8 +206,8 @@ def import_monster(monster_name: str, output_path: Path, monster_url=None):
     other_actions = {}
 
     for action, desc in actions.items():
-        action = action.replace("\u2013", "-")
-        desc = desc.replace("\u2013", "-")
+        action = escape(action)
+        desc = escape(desc)
         if desc.startswith("Melee Weapon Attack"):
             melee_attacks[action] = parse_melee(desc)
         elif desc.startswith("Ranged Weapon Attack"):
@@ -214,6 +220,29 @@ def import_monster(monster_name: str, output_path: Path, monster_url=None):
     description_blocks = soup.find_all("div", "mon-details__description-block-content")
     if description_blocks:
         description = strip_inner(description_blocks[0].text)
+
+    # Parse out lair actions, if present
+    lair_actions = None
+    lair_blocks = description_blocks
+    for lair_block in lair_blocks:
+        lair_title = lair_block.find_all("p", string='Lair Actions')
+        if lair_title:
+            lair_actions = {}
+            for element in lair_title[0].next_siblings:
+                if type(element) == bs4.element.NavigableString:
+                    continue
+                lines = element.find_all("li")
+                if lines:
+                    actions = []
+                    # Form the dict from the actions
+                    for li in lines:
+                        actions += [escape(strip_inner(li.text))]
+                    lair_actions["actions"] = actions
+                    # Break as ul always finishes the block of actions off
+                    break
+
+                element_text = escape(strip_inner(element.text))
+                lair_actions["description"] = element_text
 
     # Put gathered information into a dictionary, dump to file, then attempt to read as stat block
     monster_info = {
@@ -249,7 +278,7 @@ def import_monster(monster_name: str, output_path: Path, monster_url=None):
         else:
             separated_immunities = []
             for part in parts:
-                if part.contains("Nonmagical"):
+                if "Nonmagical" in part:
                     separated_immunities += [part]
                 else:
                     separated_immunities += part.split(", ")
@@ -311,6 +340,12 @@ def import_monster(monster_name: str, output_path: Path, monster_url=None):
 
     if other_actions:
         monster_info["other_actions"] = other_actions
+
+    if legendary_actions:
+        monster_info["legendary_actions"] = legendary_actions
+
+    if lair_actions:
+        monster_info["lair_actions"] = lair_actions
 
     if description:
         monster_info["description"] = description

@@ -3,7 +3,6 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 import shutil
 
-from fourhills.dataclasses import Quest
 from fourhills.gui.events import AnchorClickedEvent, ObjectRenamedEvent, ObjectDeletedEvent
 
 
@@ -143,7 +142,6 @@ class QuestListPane(QtWidgets.QDockWidget):
         for item in items:
             quest_name = item.data(Qt.UserRole)
             quest_path = self.path / quest_name / "quest.yaml"
-            
 
             if not quest_path.is_file():
                 QtWidgets.QErrorMessage.showMessage(

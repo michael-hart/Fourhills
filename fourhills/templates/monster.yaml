@@ -105,3 +105,17 @@ challenge: 0
 #     15 ft. of the monster must make a DC15 CON save or fall unconscious.
 
 # reactions: Not yet implemented.
+
+# Optional. A dictionary of legendary actions that can be taken with a description.
+# legendary_actions:
+#   example_attack: Does example attack
+
+# Optional. A dictionary of legendary reactions that can be taken with a description.
+# legendary_reactions:
+#   example_reaction: Does example reaction
+
+# Optional. A dictionary with specific fields describing lair actions.
+# lair_actions:
+#   description: A description of how lair actions work for this monster.
+#   actions:
+#     - example lair action 1 description

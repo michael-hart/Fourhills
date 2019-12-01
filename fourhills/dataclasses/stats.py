@@ -39,6 +39,9 @@ class StatBlock:
     multiattack: Optional[str] = None
     other_actions: Optional[Dict[str, str]] = None
     description: Optional[str] = None
+    legendary_actions: Optional[Dict[str, str]] = None
+    legendary_reactions: Optional[Dict[str, str]] = None
+    lair_actions: Optional[Dict[str, str]] = None
 
     def __str__(self):
         return self.summary_info(line_width=80)

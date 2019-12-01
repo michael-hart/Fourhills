@@ -49,7 +49,9 @@ class LocationPane(QtWidgets.QWidget):
         loc_path = Location.get_location_path(rel_path, setting)
         if not loc_path.is_file():
             QtWidgets.QErrorMessage(self).showMessage(
-                "Cannot open location {}; there must be a location.yaml file present".format(rel_path)
+                "Cannot open location {}; there must be a location.yaml file present".format(
+                    rel_path
+                )
             )
             return
 

@@ -115,6 +115,32 @@
 {% endfor %}
 {% endif %}
 
+{% if stats.legendary_actions %}
+<h3>Legendary Actions</h3><br />
+    {% for name, text in stats.legendary_actions.items() %}
+        <strong>{{name.capitalize()}}:</strong> {{text}}
+        <br />
+    {% endfor %}
+{% endif %}
+
+{% if stats.legendary_reactions %}
+<h3>Legendary Reactions</h3><br />
+    {% for name, text in stats.legendary_reactions.items() %}
+        <strong>{{name.capitalize()}}:</strong> {{text}}
+        <br />
+    {% endfor %}
+{% endif %}
+
+{% if stats.lair_actions %}
+<h3>Lair Actions</h3>
+    <p>{{ stats.lair_actions["description"] }}</p>
+    <ul>
+    {% for action in stats.lair_actions["actions"] %}
+        <li>{{ action }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+
 {% if stats.damage_vulnerabilities %}
 <h3>Damage vulnerabilities</h3> 
     {% for damage_vulnerability in stats.damage_vulnerabilities: %}
