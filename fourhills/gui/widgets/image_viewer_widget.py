@@ -75,7 +75,6 @@ class ImageViewerWidget(QtWidgets.QWidget):
 
     def wheelEvent(self, event):
         if QtWidgets.QApplication.keyboardModifiers() & Qt.ControlModifier:
-            # TODO scroll
             y_scroll = event.angleDelta().y()
             if y_scroll > 0:
                 self.zoom_in()
@@ -83,8 +82,3 @@ class ImageViewerWidget(QtWidgets.QWidget):
                 self.zoom_out()
         else:
             super().wheelEvent(event)
-        # super().wheelEvent(event)
-        # x = event.angleDelta()
-        # print(f"Got wheel event pixel delta (x,y)=({x.x()},{x.y()}):")
-        # ctrl_held = QtWidgets.QApplication.keyboardModifiers() & Qt.ControlModifier
-        # print("Control is held:", ctrl_held)

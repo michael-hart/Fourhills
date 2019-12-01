@@ -24,7 +24,7 @@ def escape(s):
 def parse_melee(melee_desc):
     melee_regex = re.compile(
         "Melee Weapon Attack: (\\+\\d+) to hit, reach (\\d+ ft\\.), (.+)\\."
-        " Hit: (.+? damage)\\.(.*)"
+        " Hit: (.+? damage .*?)\\.(.*)"
     )
     match = melee_regex.match(melee_desc)
     melee_dict = {
