@@ -13,3 +13,7 @@ class FourhillsFileLoadError(FourhillsError):
 
 class FourhillsMonsterImportError(FourhillsError):
     pass
+
+
+class FourhillsExperienceLookupError(FourhillsError):
+    pass
