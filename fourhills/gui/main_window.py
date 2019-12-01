@@ -19,6 +19,7 @@ from fourhills.gui.panes import (
 )
 from fourhills.gui.events import AnchorClickedEventFilter
 from fourhills.gui.utils import Config
+from fourhills.gui.widgets import WorkspaceTabWidget
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -40,7 +41,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # Basic window construction
         self.setObjectName("MainWindow")
         self.resize(800, 600)
-        self.centralwidget = QtWidgets.QMdiArea(self)
+
+        self.mdi_areas = []
+        self.centralwidget = WorkspaceTabWidget(self)
         self.centralwidget.setObjectName("centralwidget")
 
         # Create and set icon
@@ -206,7 +209,7 @@ class MainWindow(QtWidgets.QMainWindow):
         sub_window.setAttribute(Qt.WA_DeleteOnClose)
         sub_window.setWindowTitle(entity_widget.title)
 
-        self.centralwidget.addSubWindow(sub_window)
+        self.centralwidget.current_mdi_area().addSubWindow(sub_window)
         sub_window.show()
         sub_window.resize(400, 400)
 
@@ -237,7 +240,7 @@ class MainWindow(QtWidgets.QMainWindow):
         sub_window.setAttribute(Qt.WA_DeleteOnClose)
         sub_window.setWindowTitle(location_widget.title)
 
-        self.centralwidget.addSubWindow(sub_window)
+        self.centralwidget.current_mdi_area().addSubWindow(sub_window)
         sub_window.show()
         sub_window.resize(400, 400)
 
@@ -282,7 +285,7 @@ class MainWindow(QtWidgets.QMainWindow):
         sub_window.setAttribute(Qt.WA_DeleteOnClose)
         sub_window.setWindowTitle(note_widget.title)
 
-        self.centralwidget.addSubWindow(sub_window)
+        self.centralwidget.current_mdi_area().addSubWindow(sub_window)
         sub_window.show()
         sub_window.resize(400, 400)
 
@@ -305,7 +308,7 @@ class MainWindow(QtWidgets.QMainWindow):
         sub_window.setAttribute(Qt.WA_DeleteOnClose)
         sub_window.setWindowTitle(quest_widget.title)
 
-        self.centralwidget.addSubWindow(sub_window)
+        self.centralwidget.current_mdi_area().addSubWindow(sub_window)
         sub_window.show()
         sub_window.resize(400, 400)
 
@@ -369,7 +372,7 @@ class MainWindow(QtWidgets.QMainWindow):
             world_path = Path(world_file)
 
         # Close all open windows before load
-        self.centralwidget.closeAllSubWindows()
+        self.centralwidget.clear()
 
         # Check world file is a fh_setting.yaml file
         if not self.load(world_path):
