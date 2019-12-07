@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5 import Qt, QtCore
 
 
 class WorkspaceTabWidget(QtWidgets.QTabWidget):
@@ -26,6 +27,13 @@ class WorkspaceTabWidget(QtWidgets.QTabWidget):
 
         # Create initial tab
         self.create_tab(name="workspace")
+
+        # Create rename actions for tabs
+        self._context_menu = QtWidgets.QMenu()
+        self._rename_action = QtWidgets.QAction("Rename Tab")
+        self._rename_action.triggered.connect(self.rename_tab)
+        self._context_menu.addAction(self._rename_action)
+        self.tabBar().tabBarClicked.connect(self.tab_bar_clicked)
 
     def clear(self):
         # Remove leftmost tab until only + button remains
@@ -66,3 +74,28 @@ class WorkspaceTabWidget(QtWidgets.QTabWidget):
         if idx >= len(self.mdi_areas):
             return None
         return self.mdi_areas[idx]
+
+    def tab_bar_clicked(self, tab_index):
+        # Ignore the plus button tab
+        if tab_index < 0:
+            return
+        # Ignore left clicks
+        mouse_buttons = QtWidgets.QApplication.mouseButtons()
+        if mouse_buttons != QtCore.Qt.RightButton:
+            return
+        self._last_tab_right_clicked = tab_index
+        self._context_menu.popup(Qt.QCursor.pos())
+
+    def rename_tab(self, event):
+        name, got_name = QtWidgets.QInputDialog.getText(
+            self,
+            "Enter new tab name",
+            "Tab name:",
+        )
+        if not got_name:
+            return
+
+        self.setTabText(self._last_tab_right_clicked, name)
+
+    def customContextMenuRequested(self):
+        print("Context menu requested")
