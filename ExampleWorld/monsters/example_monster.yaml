@@ -1,0 +1,120 @@
+# This is an example monster, showing the layout of the monster file. Its stats
+# don't necessarily make sense in the context of a game.
+
+# String, with appropriate capitalisation
+name: Example monster
+# String: tiny, small, medium, large, huge or gargantuan
+size: small
+# String describing type, with optional tag in brackets. No capitalisation necessary.
+creature_type: beast
+# String describing alignment. No capitalisation.
+alignment: unaligned
+# String
+ac: "8"
+# String
+hp: 13 (2d10+2)
+# String. Can include others e.g. 'burrow 0 ft., fly 0 ft., climb 30ft., swim 20ft.'
+speed: 30 ft.
+
+# Ability scores. Dict of str, int
+ability:
+  STR: 12
+  DEX: 15
+  CON: 14
+  INT: 8
+  WIS: 10
+  CHA: 13
+
+# Optional. Dict of str, str
+saving_throws:
+  DEX: "+4"
+  CON: "+3"
+  WIS: "+2"
+  CHA: "+3"
+
+# Optional. Dict of str, str
+skills:
+  perception: "+2"
+  stealth: "+1"
+
+# Optional. List of str
+damage_vulnerabilities:
+  - acid
+  - fire
+
+# Optional. List of str
+damage_resistances:
+  - lightning
+  - nonmagical bludgeoning
+  - nonmagical piercing
+
+# Optional. List of str
+damage_immunities:
+  - thunder
+  - nonmagical slashing
+
+# Optional. List of str
+condition_immunities:
+  - charmed
+  - poisoned
+
+# Required, int.
+passive_perception: 12
+
+# Optional. Dict of str, str
+special_senses:
+  blindsight: 30 ft.
+  darkvision: 60 ft.
+
+# Optional. List of str.
+languages:
+  - any it knew in life
+
+# Required, float e.g. 1 or 0.25 (NOT 1/4)
+challenge: 1
+
+# Optional, dict of str, str. Keys are the names of the traits, and the values are a
+# description of the traits.
+special_traits:
+  flight: The creature can run at a speed of 60 ft. in a single turn if it is
+    frightened or its HP drops below 4.
+
+# Optional, describing melee weapon attacks. Dict of str, dict where keys are the
+# names of the attacks. The values are dictionaries of str, str with all allowed keys
+# as follows. All those keys except 'info' are required.
+melee_attacks:
+  bite:
+    hit: "+2"
+    reach: 5 ft.
+    targets: one target
+    damage: 4 (1d4+2) piercing plus 5 (1d6+2) slashing damage
+    info: The creature bites the opponent
+  slam:
+    hit: "+1"
+    reach: 5 ft.
+    targets: one target
+    damage: 5 (1d6+2) bludgeoning damage
+
+# Optional, describing ranged weapon attacks. Dict of str, dict where keys are the
+# names of the attacks. The values are dictionaries of str, str with all allowed keys
+# as follows. All those keys except 'info' are required.
+ranged_attacks:
+  arrow:
+    hit: "+1"
+    range: 30/120 ft.
+    targets: one target
+    damage: 5 (1d6+2) bludgeoning damage
+    info: The creature shoots an arrow
+
+# Optional. A string describing the multiattack.
+multiattack: can make 2 melee attacks.
+
+# Optional other actions. Dict of str, str where the keys are the names of the actions
+# and the values are a description of the action.
+other_actions:
+  sleep pulse: Recharge 3-6 The creature stamps on the ground. Any creatures within
+    15 ft. of the monster must make a DC15 CON save or fall unconscious.
+
+# reactions: Not yet implemented.
+
+description: Description of the creature goes here.

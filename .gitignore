@@ -1,0 +1,9 @@
+# Ignore pip files from package installation
+**/__pycache__/
+**.egg-info/
+
+# Ignore virtual environment
+venv/
+
+# Ignore VSCode data if present
+.vscode/

@@ -1,0 +1,13 @@
+name: Old Dragmoore Road
+description: "The road to Dragmoore. example_npc can be found along this road,
+willing to help the adventurers."
+npcs:
+  - example_npc
+monsters:
+  - name: example_monster
+    quantity: 3
+  - name: example_monster_2
+    quantity: 1
+map: map.jpg
+quests:
+  - FirstFetchQuest

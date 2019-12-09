@@ -1,0 +1,38 @@
+{% if quest.name %}
+  <h2>{{quest.name}}</h2>
+{% else %}
+  <h2>{{quest.path}}</h2>
+{% endif %}
+
+{% if quest.description %}
+  <h3>Description</h3>
+  <p>{{quest.description}}</p>
+{% endif %}
+
+{% if quest.requirements %}
+  <h3>Requirements</h3>
+  <ul>
+    {% for req in quest.requirements %}
+    <li>{{req}}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% if quest.rewards %}
+  <h3>Rewards</h3>
+  <ul>
+    {% for reward in quest.rewards %}
+    <li>{{reward}}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% if quest.giver %}
+  <h3>Quest Giver</h3>
+  <p><a href="npc://{{quest.giver}}">{{quest.giver}}</a></p>
+{% endif %}
+
+{% if quest.start_location %}
+  <h3>Start Location</h3>
+  <p><a href="location://{{quest.start_location}}">{{quest.start_location}}</a></p>
+{% endif %}

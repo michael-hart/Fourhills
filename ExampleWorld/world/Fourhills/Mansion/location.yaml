@@ -1,0 +1,6 @@
+name: Turtlerobe Mansion
+monsters:
+  - name: turtlerobe_guard
+    quantity: 2
+npcs:
+  - lady_turtlerobe

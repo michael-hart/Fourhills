@@ -1,4 +1,3 @@
-
 # Fourhills
 Fourhills gives a DM a text-based interface so that you can move through locations, view location and character descriptions, and have quick access to monster stats during encounters. You can also use it to automatically play background music, so that the music changes depending on the location you're in.
 
@@ -14,14 +13,21 @@ I haven't tested this much on Windows. There are three things that might make it
 3. I've never used mpd (or they Python library musicpd) with Windows, so I'm not sure whether the background music feature will work.
 
 ### Getting it Running
-1. Make sure you have Python 3 installed
-2. If you want to use the automatic background music:
+1. Make sure you have Python 3.6 or greater installed.
+2. Execute the following commands in a terminal:
+```bash
+virtualenv venv  # Optional command
+. venv/bin/activate  # Optional command for Mac/Linux
+venv/Scripts/activate  # Optional command for Windows
+pip install .  # Installs all packages and allows 'fourhills' and '4h' to execute program
+```
+3. If you want to use the automatic background music:
    - Make sure you have mpd installed
    - Install the Python library [musicpd](https://pypi.python.org/pypi/python-musicpd)
    - Use a text editor to open the file fourhills.py and change the line `MUSIC = False` to `MUSIC = True`
-3. Test whether it's working, using the example world, by going to a command line and typing `python3 fourhills.py`
-4. Create your own world according the 'Creating the World' section.
-5. If you're using the automatic background music controller, create mpd playlists for your locations. See the 'Playlists' section for more details.
+4. Test whether it's working, using the example world, by going to a command line and typing `4h --help`
+5. Create your own world according the 'Creating the World' section.
+6. If you're using the automatic background music controller, create mpd playlists for your locations. See the 'Playlists' section for more details.
 
 ### Controls
 At each location, a list of characters and places you can go from there are given.

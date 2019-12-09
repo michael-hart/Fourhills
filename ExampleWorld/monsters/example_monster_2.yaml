@@ -1,0 +1,42 @@
+# This is an example monster, showing the layout of the monster file. Its stats
+# don't necessarily make sense in the context of a game.
+
+name: Example monster 2
+size: large
+creature_type: beast
+alignment: neutral good
+ac: "9"
+hp: "14"
+speed: 30 ft. # burrow 0 ft., fly 0 ft.
+
+ability:
+  STR: 11
+  DEX: 16
+  CON: 13
+  INT: 9
+  WIS: 9
+  CHA: 14
+
+skills:
+  perception: "+3"
+  stealth: "+2"
+
+passive_perception: 10
+
+challenge: 1
+
+special_traits:
+  flight: The creature can run at a speed of 90 ft. in a single turn if its HP
+    drops below 5.
+
+melee_attacks:
+  bite:
+    hit: "+3"
+    reach: 5 ft.
+    targets: one target
+    damage: 5 piercing damage
+  slam:
+    hit: "+2"
+    reach: 5 ft.
+    targets: one target
+    damage: 5 bludgeoning damage

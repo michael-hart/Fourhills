@@ -1,0 +1,48 @@
+
+{% if location.name %}
+  <h2>{{location.name}}</h2>
+{% else %}
+  <h2>{{location.path}}</h2>
+{% endif %}
+
+{% if location.description %}
+  <h3>Description</h3>
+  <p>{{location.description}}</p>
+{% endif %}
+
+{% if location.npcs %}
+  <h3>NPCs</h3>
+  <ul>
+    {% for npc in location.npcs %}
+    <li><a href="npc://{{npc}}">{{npc}}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% if location.monsters %}
+  <h3>Monsters</h3>
+  <ul>
+    {% for monster in location.monsters %}
+    <li><a href="monster://{{monster.name}}">{{monster.name}}</a> x{{monster.quantity}}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% if location.environment %}
+  <h3>Environment</h3>
+  <p>{{location.environment}}</p>
+{% endif %}
+
+{% if location.danger_level %}
+  <h3>Danger Level</h3>
+  <p>{{location.danger_level}}</p>
+{% endif %}
+
+{% if location.quests %}
+  <h3>Quests</h3>
+  <ul>
+    {% for quest in location.quests %}
+    <li><a href="quest://{{quest}}">{{quest}}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}

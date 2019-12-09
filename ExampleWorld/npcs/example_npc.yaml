@@ -1,0 +1,32 @@
+# String, required. The name of the NPC, capitalised as necessary.
+name: Mr. B. Smith
+# String, required. The physical appearance of the NPC.
+appearance: Tall, well-built. Wears a blacksmith's apron.
+# String, optional. How the NPC behaves.
+temperament: Patient, gentle, kind-hearted and intelligent.
+# String, optional. Any accent that the character speaks with.
+accent: British
+# List of string, optional. Example phrases that the NPC might say.
+phrases:
+  - "I have run out of coal for my forge"
+  - "It's a hot day to be working at this forge"
+  - "My forge costs a lot of money to keep running"
+  - "Maybe I picked the wrong career"
+# String, optional. The NPC's upbringing, job, etc.
+background: Brought up in a small village outside Fourhills. He carried on the family
+  trade of metalwork.
+
+# Boolean, optional. Whether the NPC has died. Defaults to false if not present.
+deceased: False
+
+# String, optional. A stat block to use for this NPC. This must exactly match a filename
+# in the `monsters` directory, excluding the extension.
+stats_base: example_monster
+
+# Dict, optional. The stats of the NPC, following the same structure as monster files.
+# If a `stats_base` is specified then entries in this dictionary will override matching
+# entries in the base.
+# NOT YET IMPLEMENTED
+#stats:
+#  challenge: 2
+#  languages: common

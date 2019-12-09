@@ -1,0 +1,121 @@
+# String, with appropriate capitalisation
+name: Replace Me
+# String: description of monster
+description: Replace Me
+# String: tiny, small, medium, large, huge or gargantuan
+size: Replace Me
+# String describing type, with optional tag in brackets. No capitalisation necessary.
+creature_type: Replace Me
+# String describing alignment. No capitalisation.
+alignment: Replace Me
+# String
+ac: Replace Me
+# String
+hp: Replace Me
+# String. Can include others e.g. 'burrow 0 ft., fly 0 ft., climb 30ft., swim 20ft.'
+speed: Replace Me
+
+# Ability scores. Dict of str, int
+ability:
+  STR: 1
+  DEX: 1
+  CON: 1
+  INT: 1
+  WIS: 1
+  CHA: 1
+
+# Optional. Dict of str, str
+# saving_throws:
+#   STR: "+0"
+#   DEX: "+0"
+#   CON: "+0"
+#   INT: "+0"
+#   WIS: "+0"
+#   CHA: "+0"
+
+# Optional. Dict of str, str
+# skills:
+#   perception: "+0"
+
+# Optional. List of str
+# damage_vulnerabilities:
+#   - 
+
+# Optional. List of str
+# damage_resistances:
+#   - 
+
+# Optional. List of str
+# damage_immunities:
+#   - 
+
+# Optional. List of str
+# condition_immunities:
+#   - 
+
+# Required, int.
+passive_perception: 1
+
+# Optional. Dict of str, str
+# special_senses:
+#   darkvision: 60 ft.
+
+# Optional. List of str.
+# languages:
+#   - 
+
+# Required, float e.g. 1 or 0.25 (NOT 1/4)
+challenge: 0
+
+# Optional, dict of str, str. Keys are the names of the traits, and the values are a
+# description of the traits.
+# special_traits:
+#   flight: The creature can run at a speed of 60 ft. in a single turn if it is
+#     frightened or its HP drops below 4.
+
+# Optional, describing melee weapon attacks. Dict of str, dict where keys are the
+# names of the attacks. The values are dictionaries of str, str with all allowed keys
+# as follows. All those keys except 'info' are required.
+# melee_attacks:
+#   attack_name:
+#     hit: "+0"
+#     reach: 5 ft.
+#     targets: one target
+#     damage: 1 <type> damage
+#     info: 
+
+# Optional, describing ranged weapon attacks. Dict of str, dict where keys are the
+# names of the attacks. The values are dictionaries of str, str with all allowed keys
+# as follows. All those keys except 'info' are required.
+# ranged_attacks:
+#   attack_name:
+#     hit: "+0"
+#     range: x/y ft.
+#     targets: one target
+#     damage: 1 <type> damage
+#     info:
+
+# Optional. A string describing the multiattack.
+# multiattack: can make 2 melee attacks.
+
+# Optional other actions. Dict of str, str where the keys are the names of the actions
+# and the values are a description of the action.
+# other_actions:
+#   sleep pulse: Recharge 3-6 The creature stamps on the ground. Any creatures within
+#     15 ft. of the monster must make a DC15 CON save or fall unconscious.
+
+# reactions: Not yet implemented.
+
+# Optional. A dictionary of legendary actions that can be taken with a description.
+# legendary_actions:
+#   example_attack: Does example attack
+
+# Optional. A dictionary of legendary reactions that can be taken with a description.
+# legendary_reactions:
+#   example_reaction: Does example reaction
+
+# Optional. A dictionary with specific fields describing lair actions.
+# lair_actions:
+#   description: A description of how lair actions work for this monster.
+#   actions:
+#     - example lair action 1 description

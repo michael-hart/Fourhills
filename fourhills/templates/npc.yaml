@@ -1,0 +1,25 @@
+# String, required. The name of the NPC, capitalised as necessary.
+name: Replace Me
+
+# String, required. The physical appearance of the NPC.
+appearance: Replace Me
+
+# String, optional. How the NPC behaves.
+# temperament: 
+
+# String, optional. Any accent that the character speaks with.
+# accent: 
+
+# List of string, optional. Example phrases that the NPC might say.
+# phrases:
+#   - 
+
+# String, optional. The NPC's upbringing, job, etc.
+# background: 
+
+# Boolean, optional. Whether the NPC has died. Defaults to false if not present.
+# deceased: 
+
+# String, optional. A stat block to use for this NPC. This must exactly match a filename
+# in the `monsters` directory, excluding the extension.
+# stats_base: 

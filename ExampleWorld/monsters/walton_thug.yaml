@@ -1,0 +1,45 @@
+name: Walton Thug
+size: medium
+creature_type: human
+alignment: unaligned
+ac: "11"
+hp: "32"
+speed: 30 ft.
+
+ability:
+  STR: 15
+  DEX: 11
+  CON: 14
+  INT: 10
+  WIS: 10
+  CHA: 11
+
+skills:
+  intimidation: "+2"
+
+passive_perception: 10
+
+languages:
+  - common
+
+challenge: 0.5
+
+melee_attacks:
+  mace:
+    hit: "+4"
+    range: 5 ft.
+    targets: one target
+    damage: 5 (1d6+2) bludgeoning damage
+
+ranged_attacks:
+  heavy_crossbow:
+    hit: "+2"
+    range: 100/400 ft.
+    targets: one target
+    damage: 5 (1d10) piercing damage
+
+multiattack: can make 2 melee attacks.
+
+other_actions:
+  pack tactics: "Advantage on an attack roll against a creature if at least one of the
+thug's allies is within 5ft. of the creature and the ally isn't incapacitated."

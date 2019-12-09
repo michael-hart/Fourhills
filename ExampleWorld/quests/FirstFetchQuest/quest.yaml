@@ -1,0 +1,20 @@
+# name, string representing name of quest
+name: Super Awesome Fetch Quest
+
+# requirements, optional list of requirements
+requirements:
+  - At least two party members or level 3 or over
+
+# rewards, optional list of rewards for completing the quest
+rewards:
+  - 50 gp per player
+  - Gratitude of example_npc
+
+# description, optional brief description of quest separate from description.md
+description: A simple fetch quest to get the stolen item back
+
+# giver, optional string of NPC who gave the quest
+giver: example_npc
+
+# Starting location, optional string of location path for starting quest
+start_location: OldDragmooreRoad

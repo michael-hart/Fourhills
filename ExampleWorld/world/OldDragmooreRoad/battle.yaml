@@ -1,0 +1,6 @@
+monsters:
+  - example_monster x3
+  - example_monster_2
+
+npcs:
+  - example_npc

@@ -1,0 +1,9 @@
+Quests
+Objects
+Artifacts
+Recent Worlds
+Map Overlays
+Drag and Drop of locations
+Party Information
+Encounter Balance
+Drag and drop NPC/location into note to insert hyperlink

@@ -1,0 +1,25 @@
+# All arguments are optional
+
+# Name of location. Name can be inferred from path if preferred
+name: Replace Me
+
+# List of strings of NPCs e.g. example_npc (do not include .yaml)
+# npcs:
+#   - 
+
+# List of monsters at location e.g. example_monster (do not include .yaml)
+# monsters:
+#   - 
+
+# String representing environment e.g. city, forest
+# environment: 
+
+# String representing danger level e.g. civilised, mild, or descriptive string
+# danger_level:
+
+# String representing brief description of location - larger description should be in scene.md
+# description: 
+
+# List of quests available to start in the location
+# quests:
+#   -

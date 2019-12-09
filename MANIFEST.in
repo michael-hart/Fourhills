@@ -1,0 +1,2 @@
+recursive-include fourhills/templates *
+recursive-include fourhills/gui/templates *
