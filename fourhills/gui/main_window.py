@@ -14,6 +14,8 @@ from fourhills.gui.panes import (
     LocationTreePane,
     NotePane,
     NoteTreePane,
+    PartyPane,
+    PartyListPane,
     QuestPane,
     QuestListPane,
 )
@@ -33,6 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
     note_pane = None
     npc_pane = None
     monsters_pane = None
+    party_pane = None
     quests_pane = None
 
     def __init__(self):
@@ -57,6 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Populate with starting panes
         self.create_location_pane(area=Qt.LeftDockWidgetArea)
         self.create_note_pane(area=Qt.LeftDockWidgetArea)
+        self.create_party_pane(area=Qt.RightDockWidgetArea)
         self.create_npc_pane(area=Qt.RightDockWidgetArea)
         self.create_monsters_pane(area=Qt.RightDockWidgetArea)
 
@@ -116,6 +120,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.monsters_pane.load(self.setting.monsters_dir)
             self.monsters_pane.entity_list.itemActivated.connect(self.on_entity_activated)
 
+    def create_party_pane(self, checked=False, area=None):
+        if self.party_pane is None or not self.party_pane.isVisible():
+            self.party_pane = PartyListPane("Party", self)
+            self._show_docked_pane(self.party_pane, area)
+            if hasattr(self, "setting") and self.setting is not None:
+                self.party_pane.load(self.setting.parties_dir)
+            self.party_pane.party_list.itemActivated.connect(self.on_party_activated)
+
     def create_quests_pane(self, checked=False, area=None):
         if self.quests_pane is None or not self.quests_pane.isVisible():
             self.quests_pane = QuestListPane("Quests", self)
@@ -157,6 +169,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.view_notes_action.setStatusTip("View list of GM notes")
         self.view_notes_action.triggered.connect(self.create_note_pane)
 
+        self.view_parties_action = QtWidgets.QAction("&Parties", self)
+        self.view_parties_action.setStatusTip("View list of parties within the world")
+        self.view_parties_action.triggered.connect(self.create_party_pane)
+
         self.view_quests_action = QtWidgets.QAction("&Quests", self)
         self.view_quests_action.setStatusTip("View list of quests")
         self.view_quests_action.triggered.connect(self.create_quests_pane)
@@ -175,6 +191,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.view_menu.addAction(self.view_npc_action)
         self.view_menu.addAction(self.view_monster_action)
         self.view_menu.addAction(self.view_notes_action)
+        self.view_menu.addAction(self.view_parties_action)
         self.view_menu.addAction(self.view_quests_action)
 
     def update_recent_worlds_menu(self):
@@ -289,6 +306,28 @@ class MainWindow(QtWidgets.QMainWindow):
         sub_window.show()
         sub_window.resize(400, 400)
 
+    def on_party_activated(self, event):
+        party_file = event.data(Qt.UserRole)
+        self.open_party(party_file)
+
+    def open_party(self, party):
+        # Present error message if party is not real
+        try:
+            party_widget = PartyPane(party, self.setting, self)
+        except FourhillsSettingStructureError as fsse:
+            QtWidgets.QErrorMessage(self).showMessage("\n".join(fsse.args))
+            return
+
+        # Create a new Mdi window with the entity information
+        sub_window = QtWidgets.QMdiSubWindow(self.centralwidget)
+        sub_window.setWidget(party_widget)
+        sub_window.setAttribute(Qt.WA_DeleteOnClose)
+        sub_window.setWindowTitle(party_widget.title)
+
+        self.centralwidget.current_mdi_area().addSubWindow(sub_window)
+        sub_window.show()
+        sub_window.resize(400, 400)
+
     def on_quest_activated(self, event):
         # Get quest information and construct widget
         quest_file = event.data(Qt.UserRole)
@@ -326,6 +365,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.open_note(Path(*parts[1:]))
         elif event_type == "quest":
             self.open_quest(parts[1])
+        elif event_type == "party":
+            self.open_party(parts[1])
         else:
             self.anchor_click_error.showMessage(
                 f"Unknown window type requested: {event_type}"
@@ -411,6 +452,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.monsters_pane.load(self.setting.monsters_dir)
         if self.quests_pane is not None:
             self.quests_pane.load(self.setting.quest_dir)
+        if self.party_pane is not None:
+            self.party_pane.load(self.setting.parties_dir)
 
         return True
 

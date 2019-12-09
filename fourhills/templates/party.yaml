@@ -1,0 +1,16 @@
+# name, string, required. The name of the party.
+name: Replace Me
+
+# Players, list of strings, required. The names of the player characters in the party.
+players:
+  - replaceme
+
+# Quests, dictionary with standard keys, optional. Describes the state of quests that the
+# party is undertaking/has completed.
+# quests:
+#   - name: 
+#     status: 
+#     notes: 
+
+# Notes, string, optional. Any additional notes about the party in free text format.
+# notes: 
