@@ -1,0 +1,36 @@
+<html>
+
+<h2>{{party.name}}</h2>
+
+<h3>Players</h3>
+<ul>
+{% for player in party.players %}
+<li>{{player}}</li>
+{% endfor %}
+</ul>
+
+{% if party.quests %}
+  <h3>Quests</h3>
+  <hr />
+  <table align=center width=95%>
+
+  <thead><tr><th>Name</th><th>Status</th><th>Notes</th></tr></thead>
+  <tbody>
+    {% for quest in party.quests %}
+    <tr>
+        <td align=center margin-left="10px"><a href="quest://{{quest.name}}">{{quest.name}}</a></td>
+        <td align=center margin-left="10px">{{quest.status}}</td>
+        <td align=center margin-left="10px">{{quest.notes}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+  <hr />
+{% endif %}
+
+{% if party.notes %}
+<h3>Notes</h3>
+<p>{{party.notes}}</p>
+{% endif %}
+
+</html>

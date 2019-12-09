@@ -4,6 +4,8 @@ from .location_pane import LocationPane
 from .location_tree_pane import LocationTreePane
 from .note_pane import NotePane
 from .note_tree_pane import NoteTreePane
+from .party_pane import PartyPane
+from .party_list_pane import PartyListPane
 from .quest_pane import QuestPane
 from .quest_list_pane import QuestListPane
 
@@ -14,6 +16,8 @@ __all__ = [
     "LocationTreePane",
     "NotePane",
     "NoteTreePane",
+    "PartyPane",
+    "PartyListPane",
     "QuestPane",
     "QuestListPane",
 ]

@@ -1,0 +1,14 @@
+name: ExampleParty
+
+players:
+  - ExamplePlayer01
+  - ExamplePlayer02
+  - ExamplePlayer03
+  - ExamplePlayer04
+
+quests:
+  - name: FirstFetchQuest
+    status: In Progress
+    notes: Party haggled to get 60 gp per player instead of 50 gp
+
+notes: Party has example behaviour given example situations

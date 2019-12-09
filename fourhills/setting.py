@@ -13,6 +13,7 @@ class Setting:
         "npcs": "npcs",
         "notes": "notes",
         "quests": "quests",
+        "parties": "parties",
     }
 
     def __init__(self, base_path=None):
@@ -73,3 +74,7 @@ class Setting:
     @property
     def quest_dir(self):
         return self.root / self.DIRNAMES["quests"]
+
+    @property
+    def parties_dir(self):
+        return self.root / self.DIRNAMES["parties"]
