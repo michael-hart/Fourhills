@@ -15,6 +15,7 @@ setuptools.setup(
         "click",
         "dataclasses",
         "jinja2",
+        "keyring",
         "markdown",
         "pyyaml",
         "PyQt5",

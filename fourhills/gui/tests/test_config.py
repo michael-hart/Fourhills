@@ -115,3 +115,48 @@ def test_set_last_opened_is_saved(clean_config):
     test_path = "test_path"
     Config.set_last_opened(test_path)
     assert str(Config.last_opened()) == test_path
+
+
+def test_save_user_appears_in_saved(clean_config):
+    test_user = "test_user"
+    Config.save_user(test_user)
+    assert test_user in Config.get_saved_users()
+
+
+def test_multiple_users_appear_in_saved(clean_config):
+    test_users = ["test1", "test2", "test3"]
+    for user in test_users:
+        Config.save_user(user)
+    for user in test_users:
+        assert user in Config.get_saved_users()
+
+
+def test_remove_user_works(clean_config):
+    test_users = ["test1", "test2", "test3"]
+    for user in test_users:
+        Config.save_user(user)
+    Config.remove_user(test_users[0])
+    assert test_users[0] not in Config.get_saved_users()
+    for user in test_users[1:]:
+        assert user in Config.get_saved_users()
+
+
+def test_set_active_user(clean_config):
+    test_user = "test_user"
+    Config.set_active_user(test_user)
+    assert Config.get_active_user() == test_user
+
+
+def test_no_active_user_gives_none(clean_config):
+    assert Config.get_active_user() is None
+
+
+def test_empty_active_user_gives_none(clean_config):
+    Config.set_active_user("")
+    assert Config.get_active_user() is None
+
+
+def test_clear_active_user_removes_user(clean_config):
+    Config.set_active_user("test")
+    Config.clear_active_user()
+    assert Config.get_active_user() is None

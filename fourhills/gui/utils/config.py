@@ -1,7 +1,7 @@
 from appdirs import user_data_dir
 import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 import yaml
 
 from fourhills.fourhills import AUTHOR, PACKAGE
@@ -38,11 +38,19 @@ class Config:
             yaml.safe_dump(conf, f)
 
     @staticmethod
+    def _validate_list(conf, key):
+        if key not in conf:
+            conf[key] = []
+        if not type(conf[key] == list):
+            conf[key] = []
+
+    @staticmethod
     def _validate_recent_worlds(conf):
-        if "recent_worlds" not in conf:
-            conf["recent_worlds"] = []
-        if not type(conf["recent_worlds"] == list):
-            conf["recent_worlds"] = []
+        Config._validate_list(conf, "recent_worlds")
+
+    @staticmethod
+    def _validate_saved_users(conf):
+        Config._validate_list(conf, "saved_users")
 
     @staticmethod
     def dt_to_str(dt):
@@ -116,4 +124,45 @@ class Config:
     def set_last_opened(last_opened):
         conf = Config.load_config()
         conf["last_opened"] = str(last_opened)
+        Config.save_config(conf)
+
+    @staticmethod
+    def get_saved_users() -> List[str]:
+        conf = Config.load_config()
+        Config._validate_saved_users(conf)
+        return conf["saved_users"]
+
+    @staticmethod
+    def save_user(username):
+        conf = Config.load_config()
+        Config._validate_saved_users(conf)
+        if username not in conf["saved_users"]:
+            conf["saved_users"] += [username]
+        Config.save_config(conf)
+
+    @staticmethod
+    def remove_user(username):
+        conf = Config.load_config()
+        Config._validate_saved_users(conf)
+        if username in conf["saved_users"]:
+            conf["saved_users"].remove(username)
+        Config.save_config(conf)
+
+    @staticmethod
+    def get_active_user() -> Optional[str]:
+        conf = Config.load_config()
+        if "active_user" in conf and conf["active_user"]:
+            return conf["active_user"]
+        return None
+
+    @staticmethod
+    def set_active_user(username):
+        conf = Config.load_config()
+        conf["active_user"] = username
+        Config.save_config(conf)
+
+    @staticmethod
+    def clear_active_user():
+        conf = Config.load_config()
+        conf.pop("active_user", None)
         Config.save_config(conf)
