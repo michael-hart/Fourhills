@@ -1,12 +1,12 @@
-import jinja2
 from pathlib import Path
 from PyQt5 import QtWidgets
 
 from fourhills.dataclasses import Npc, StatBlock
 from fourhills.exceptions import FourhillsExperienceLookupError
 from fourhills.utils import cr_to_xp
-from fourhills.gui.widgets import LinkingBrowser
 from fourhills.gui.events import ObjectRenamedEventFilter, ObjectDeletedEventFilter
+from fourhills.gui.utils import get_jinja_env
+from fourhills.gui.widgets import LinkingBrowser
 
 
 class EntityPane(QtWidgets.QWidget):
@@ -29,9 +29,7 @@ class EntityPane(QtWidgets.QWidget):
             return
 
         # Jinja template initialisation
-        jinja_env = jinja2.Environment(
-            loader=jinja2.PackageLoader('fourhills', package_path='gui/templates')
-        )
+        jinja_env = get_jinja_env()
         jinja_env.globals.update(cr_to_xp=cr_to_xp)
 
         self.battle_info_template = jinja_env.get_template("battle_info.j2")
@@ -118,10 +116,13 @@ class EntityPane(QtWidgets.QWidget):
 
     def render_npc_stat(self, entity_path: Path):
         npc = Npc.from_name(entity_path.stem, self.setting)
-        try:
-            npc.xp = f"{cr_to_xp(npc.stats.challenge)} XP"
-        except FourhillsExperienceLookupError:
-            npc.xp = "XP could not be calculated"
+        if getattr(npc, "stats"):
+            try:
+                npc.xp = f"{cr_to_xp(npc.stats.challenge)} XP"
+            except FourhillsExperienceLookupError:
+                npc.xp = "XP could not be calculated"
+        else:
+            npc.xp = "Set a state_base for this character to see XP"
         return self.battle_info_template.render(stats=npc.stats)
 
     def render_monster_stat(self, entity_path: Path):

@@ -7,6 +7,7 @@ import shutil
 
 from fourhills.gui.events import AnchorClickedEvent, ObjectDeletedEvent, ObjectRenamedEvent
 from fourhills.gui.utils.make_tree import make_tree_from_path
+from fourhills.gui.utils import get_template_path
 from fourhills.gui.widgets import DeselectableTree
 
 
@@ -140,7 +141,7 @@ class NoteTreePane(QtWidgets.QDockWidget):
             return
 
         # Copy the template note into the new location
-        template_path = Path(__file__).parents[2] / "templates" / "gm_note.md"
+        template_path = get_template_path() / "gm_note.md"
         shutil.copy(template_path, new_note_path)
 
         # Add the new note to the tree and set selected

@@ -19,6 +19,10 @@ setuptools.setup(
         "pyyaml",
         "PyQt5",
     ],
+    extras_require={
+        "dev": ["pytest", "flake8"],
+        "install": ["cx_freeze"],
+    },
     entry_points={
         'console_scripts': [
             '4h = fourhills.fourhills:main',

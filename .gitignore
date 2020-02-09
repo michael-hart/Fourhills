@@ -7,3 +7,6 @@ venv/
 
 # Ignore VSCode data if present
 .vscode/
+
+# Remove build folder from installer
+build/
