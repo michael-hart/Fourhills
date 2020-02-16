@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Optional
-from fourhills.exceptions import FourhillsSettingStructureError
 
 
 class Setting:
@@ -46,10 +45,9 @@ class Setting:
             if (current_dir / Setting.CONFIG_FILENAME).is_file():
                 # Make sure the require directories are there
                 for directory_name in Setting.DIRNAMES.values():
-                    if not (current_dir / directory_name).is_dir():
-                        raise FourhillsSettingStructureError(
-                            f"Setting root does not contain {directory_name} directory."
-                        )
+                    sub_dir = current_dir / directory_name
+                    if not sub_dir.is_dir():
+                        sub_dir.touch()
                 return current_dir
             current_dir = current_dir.parent
         # If the root directory wasn't found, return None

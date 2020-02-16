@@ -1,6 +1,5 @@
 """Definition for location pane, giving details about the selected location"""
 
-import jinja2
 import markdown
 from pathlib import Path
 from PyQt5 import QtWidgets
@@ -8,6 +7,7 @@ from PyQt5 import QtWidgets
 from fourhills import Setting
 from fourhills.dataclasses import Location
 from fourhills.gui.events import ObjectDeletedEventFilter, ObjectRenamedEventFilter
+from fourhills.gui.utils import get_jinja_env
 from fourhills.gui.widgets import ImageViewerWidget, LinkingBrowser
 
 
@@ -22,9 +22,7 @@ class LocationPane(QtWidgets.QWidget):
         self.setting = setting
 
         # Jinja template initialiation
-        jinja_env = jinja2.Environment(
-            loader=jinja2.PackageLoader('fourhills', package_path='gui/templates')
-        )
+        jinja_env = get_jinja_env()
 
         self.location_template = jinja_env.get_template("location_info.j2")
 

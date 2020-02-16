@@ -5,6 +5,7 @@ import shutil
 
 from fourhills.gui.events import AnchorClickedEvent, ObjectDeletedEvent, ObjectRenamedEvent
 from fourhills.gui.utils.make_tree import make_tree_from_path
+from fourhills.gui.utils import get_template_path
 
 
 class LocationTreePane(QtWidgets.QDockWidget):
@@ -94,7 +95,7 @@ class LocationTreePane(QtWidgets.QDockWidget):
             return
 
         # Copy the template location into the new location
-        template_path = Path(__file__).parents[2] / "templates" / "location"
+        template_path = get_template_path() / "location"
         shutil.copytree(str(template_path), str(new_path))
 
         # Load up self again to load new location

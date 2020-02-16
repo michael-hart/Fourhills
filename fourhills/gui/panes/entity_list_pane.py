@@ -1,10 +1,10 @@
-from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 import shutil
 
 from fourhills.exceptions import FourhillsMonsterImportError
 from fourhills.gui.events import AnchorClickedEvent, ObjectRenamedEvent, ObjectDeletedEvent
+from fourhills.gui.utils import get_template_path
 from fourhills.utils.import_monster import import_monster
 from fourhills.utils.text_utils import slugify
 
@@ -89,7 +89,7 @@ class EntityListPane(QtWidgets.QDockWidget):
             return
 
         # Copy the template NPC into the new location
-        template_path = Path(__file__).parents[2] / "templates" / f"{self.entity_type.lower()}.yaml"
+        template_path = get_template_path() / f"{self.entity_type.lower()}.yaml"
         shutil.copy(str(template_path), str(entity_path))
 
         # Load up self again to load new entity

@@ -4,6 +4,7 @@ from PyQt5.QtCore import Qt
 import shutil
 
 from fourhills.gui.events import AnchorClickedEvent, ObjectRenamedEvent, ObjectDeletedEvent
+from fourhills.gui.utils import get_template_path
 
 
 class QuestListPane(QtWidgets.QDockWidget):
@@ -85,7 +86,7 @@ class QuestListPane(QtWidgets.QDockWidget):
             return
 
         # Copy the template quest into the new location
-        template_path = Path(__file__).parents[2] / "templates" / "quest"
+        template_path = get_template_path() / "quest"
         shutil.copytree(template_path, quest_path.parent)
 
         # Load up self again for new quest

@@ -1,10 +1,10 @@
-import jinja2
 from pathlib import Path
 from PyQt5 import QtWidgets
 
 from fourhills.dataclasses import Party
-from fourhills.gui.widgets import LinkingBrowser
 from fourhills.gui.events import ObjectRenamedEventFilter, ObjectDeletedEventFilter
+from fourhills.gui.utils import get_jinja_env
+from fourhills.gui.widgets import LinkingBrowser
 
 
 class PartyPane(QtWidgets.QWidget):
@@ -16,10 +16,7 @@ class PartyPane(QtWidgets.QWidget):
         self.setting = setting
 
         # Jinja template initialisation
-        jinja_env = jinja2.Environment(
-            loader=jinja2.PackageLoader('fourhills', package_path='gui/templates')
-        )
-
+        jinja_env = get_jinja_env()
         self.party_info_template = jinja_env.get_template("party_info.j2")
 
         # Create events for party renaming and deleting

@@ -1,9 +1,9 @@
-from pathlib import Path
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 import shutil
 
 from fourhills.gui.events import AnchorClickedEvent, ObjectRenamedEvent, ObjectDeletedEvent
+from fourhills.gui.utils import get_template_path
 
 
 class PartyListPane(QtWidgets.QDockWidget):
@@ -79,7 +79,7 @@ class PartyListPane(QtWidgets.QDockWidget):
             return
 
         # Copy the template NPC into the new location
-        template_path = Path(__file__).parents[2] / "templates" / "party.yaml"
+        template_path = get_template_path() / "party.yaml"
         shutil.copy(str(template_path), str(party_path))
 
         # Load up self again to load new entity

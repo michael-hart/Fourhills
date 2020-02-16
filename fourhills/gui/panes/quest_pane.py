@@ -1,14 +1,14 @@
 """Definition for a quest pane, giving details about a possible quest"""
 
-import jinja2
 import markdown
 from pathlib import Path
 from PyQt5 import QtWidgets
 
 from fourhills import Setting
 from fourhills.dataclasses import Quest
-from fourhills.gui.widgets import LinkingBrowser
 from fourhills.gui.events import ObjectDeletedEventFilter, ObjectRenamedEventFilter
+from fourhills.gui.utils import get_jinja_env
+from fourhills.gui.widgets import LinkingBrowser
 
 
 class QuestPane(QtWidgets.QWidget):
@@ -20,10 +20,7 @@ class QuestPane(QtWidgets.QWidget):
         self.setting = setting
 
         # Jinja template initialisation
-        jinja_env = jinja2.Environment(
-            loader=jinja2.PackageLoader('fourhills', package_path='gui/templates')
-        )
-
+        jinja_env = get_jinja_env()
         self.quest_template = jinja_env.get_template("quest_info.j2")
 
         # Create events for quest renaming and deleting

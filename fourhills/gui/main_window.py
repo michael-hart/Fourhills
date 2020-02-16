@@ -4,6 +4,7 @@ from functools import partial
 from pathlib import Path
 from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
+import sys
 
 from fourhills import Setting
 from fourhills.exceptions import FourhillsSettingStructureError
@@ -50,7 +51,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralwidget.setObjectName("centralwidget")
 
         # Create and set icon
-        icon_path = Path(__file__).parent / "resources" / "icon.png"
+        if getattr(sys, "frozen", False):
+            icon_path = Path(sys.executable).parent / "resources" / "icon.png"
+        else:
+            icon_path = Path(__file__).parent / "resources" / "icon.png"
         self.setWindowIcon(QtGui.QIcon(str(icon_path)))
 
         # Root layout creation
