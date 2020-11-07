@@ -12,22 +12,28 @@ class PartyListPane(QtWidgets.QDockWidget):
 
     def __init__(self, title, parent=None):
         super().__init__(title, parent)
-
-        self.centralwidget = QtWidgets.QWidget()
-        self.setWidget(self.centralwidget)
-        layout = QtWidgets.QVBoxLayout()
-        self.centralwidget.setLayout(layout)
-
         self.party_list = QtWidgets.QListWidget()
         self.party_list.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        layout.addWidget(self.party_list)
+        self.setWidget(self.party_list)
 
-        # Allow user options for adding/renaming/deleting entities
+        self.create_actions()
+
+        # Allow user options for adding/renaming/deleting parties
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
 
+    def create_actions(self):
+        print("Created actions")
+        self.create_party_action = QtWidgets.QAction("&Create Party", self)
+        self.rename_party_action = QtWidgets.QAction("&Rename Party", self)
+        self.delete_party_action = QtWidgets.QAction("&Delete Party (or parties)", self)
+
+        self.create_party_action.triggered.connect(self.create_party)
+        self.rename_party_action.triggered.connect(self.rename_party)
+        self.delete_party_action.triggered.connect(self.delete_parties)
+
     def load(self, path):
-        """Search path for YAML files and load them as entities"""
+        """Search path for YAML files and load them as parties"""
         self.path = path
         self.party_list.clear()
 
@@ -41,6 +47,7 @@ class PartyListPane(QtWidgets.QDockWidget):
             self.party_list.addItem(item)
 
     def show_context_menu(self, point_pos):
+        print("Showing context menu")
         if not self.path:
             return
 
@@ -49,12 +56,12 @@ class PartyListPane(QtWidgets.QDockWidget):
 
         # Create menu and insert actions
         menu = QtWidgets.QMenu(self)
-        menu.addAction(f"Create Party", self.create_entity)
+        menu.addAction(self.create_party_action)
         n_selected = len(self.party_list.selectedItems())
         if n_selected == 1:
-            menu.addAction(f"Rename Party", self.rename_entity)
+            menu.addAction(self.rename_party_action)
         if n_selected >= 1:
-            menu.addAction(f"Delete Party(s)", self.delete_entities)
+            menu.addAction(self.delete_party_action)
 
         # Show context menu at handling position
         menu.exec(global_pos)
@@ -131,7 +138,6 @@ class PartyListPane(QtWidgets.QDockWidget):
         )
 
     def delete_parties(self):
-
         items = self.party_list.selectedItems()
         paths = []
         for item in items:
@@ -160,11 +166,11 @@ class PartyListPane(QtWidgets.QDockWidget):
             return
 
         # Delete and post events for each file
-        for entity_path in paths:
-            entity_path.unlink()
+        for party_path in paths:
+            party_path.unlink()
             QtCore.QCoreApplication.postEvent(
                 QtCore.QCoreApplication.instance(),
-                ObjectDeletedEvent(self.entity_type, entity_path.stem)
+                ObjectDeletedEvent("Party", party_path.stem)
             )
 
         # Reload widget after deletion
